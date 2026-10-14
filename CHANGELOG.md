@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.2.0** |
+| App-Version (`sw.js` → `VERSION`) | **v3.2.1** |
 | Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
 | Tests | keine automatisierten Tests |
 
@@ -61,6 +61,15 @@ Der Funktionsumfang ist vollständig umgesetzt (siehe unten). Es gibt keine beka
 ## Versionen
 
 Neueste zuerst.
+
+### v3.2.1 – Lizenz AGPL-3.0
+
+- **Lizenzwechsel:** VereinsAuslagen steht jetzt unter der **GNU AGPL v3** statt der GPL v3
+  (`LICENSE`). Wer die App übers Netz nutzt, kann den Quelltext beziehen
+- **Quelltext-Link in der App:** Anmeldeseite (alle Schritte vor der Anmeldung) und Profil unter
+  „App-Version“ zeigen einen Lizenzhinweis mit Link zur AGPL und zum Repository
+  (`QUELLTEXT_URL`/`lizenzHinweisHtml()` in `js/hilfen.js`). Betreiber einer geänderten Fassung
+  stellen die Adresse auf ihren eigenen Quelltext um (README → Lizenz)
 
 ### v3.2.0 – Verlauf und Rückfragen
 

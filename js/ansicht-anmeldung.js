@@ -2,7 +2,7 @@
 // VOR DER ANMELDUNG: Einrichtung, Anmeldung, zweiter Faktor, Pflicht-Passwortwechsel
 // Nach Erfolg wird „angemeldet“ ausgelöst; main.js lädt dann die Daten und zeigt die App.
 // =============================================
-import { escapeHtml, zeigeToast, mitLadezustand, registriereAktionen } from './hilfen.js';
+import { escapeHtml, zeigeToast, mitLadezustand, registriereAktionen, lizenzHinweisHtml } from './hilfen.js';
 import { apiPost } from './api.js';
 import { ladeStatus, serverStatus, setzeBenutzer, meldeAb, passkeysMoeglich } from './sitzung.js';
 import { passkeyAssertion } from './webauthn.js';
@@ -25,7 +25,7 @@ export function rendereAnmeldeSchritt(container) {
     mfa:              mfaHtml,
     'passwort-zwang': passwortZwangHtml
   }[anmeldeSchritt()];
-  container.innerHTML = `<div class="ansicht anmelde-ansicht">${html()}</div>`;
+  container.innerHTML = `<div class="ansicht anmelde-ansicht">${html()}${lizenzHinweisHtml('klein-hinweis--lizenz')}</div>`;
   container.querySelector('[autofocus]')?.focus();
 }
 

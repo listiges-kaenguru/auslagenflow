@@ -336,6 +336,9 @@ eine neuere Version, erscheint dort der Hinweis **Aktualisierung verfügbar** mi
 Versionsnummer. Tippe auf **🔄 Jetzt aktualisieren**, die App lädt dann neu. Deine Daten bleiben
 dabei erhalten.
 
+Darunter (und auf der Anmeldeseite) steht, dass VereinsAuslagen freie Software unter der GNU AGPL v3
+ist. Über **Quelltext** kommst du zum Programmcode der App.
+
 ## 10. Häufige Fragen und Probleme
 
 **Ich habe mein Passwort vergessen.**

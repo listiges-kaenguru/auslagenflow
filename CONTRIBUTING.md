@@ -155,6 +155,6 @@ der Datenbank.
 
 ## Lizenz
 
-VereinsAuslagen steht unter der **[GNU General Public License v3.0](LICENSE)**. Mit dem
+VereinsAuslagen steht unter der **[GNU Affero General Public License v3.0](LICENSE)**. Mit dem
 Einreichen eines Beitrags erklärst du dich einverstanden, dass er unter derselben Lizenz
 veröffentlicht wird, und bestätigst, dass du die Rechte dazu hast.
