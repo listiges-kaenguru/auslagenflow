@@ -954,6 +954,8 @@ textarea.formular-feld { resize: vertical; min-height: 76px; line-height: 1.45; 
   margin-top: 4px;
 }
 .klein-hinweis--oben { margin-top: -4px; margin-bottom: 6px; }
+.klein-hinweis a { color: inherit; }
+.klein-hinweis--lizenz { margin-top: 20px; }
 
 .abschnitt {
   margin-top: 32px;

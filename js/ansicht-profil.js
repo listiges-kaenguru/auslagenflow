@@ -1,11 +1,11 @@
 // =============================================
 // ANSICHT 4: PROFIL
-// Stammdaten · Passwort · Zwei-Faktor (TOTP) · Passkeys · Abmelden · App-Version
+// Stammdaten · Passwort · Zwei-Faktor (TOTP) · Passkeys · Abmelden · App-Version (mit Lizenz/Quelltext)
 // Für Admins zusätzlich „Administration“: Benutzerverwaltung (inkl. Kassenrolle) und Datenbank-Verbindung
 // =============================================
 import {
   escapeHtml, formatiereDatum, formatiereGroesse, plural, zeigeToast, mitLadezustand, registriereAktionen,
-  ladeSkript, ladeDateiHerunter
+  ladeSkript, ladeDateiHerunter, lizenzHinweisHtml
 } from './hilfen.js';
 import { apiGet, apiPost, apiPut, apiDelete, mitId } from './api.js';
 import { aktuellerBenutzer, setzeBenutzer, istAdmin, anzeigeName, passkeysMoeglich, meldeAb, ladeStatus } from './sitzung.js';
@@ -224,7 +224,8 @@ function versionHtml() {
         <p class="abschnitt__text">Neue Version: <strong>${escapeHtml(neu ? `v${neu}` : 'wird ermittelt …')}</strong> – deine Daten bleiben erhalten.</p>
         <button type="button" class="btn btn-primaer btn-klein" data-aktion="update-installieren">🔄 Jetzt aktualisieren</button>
       </div>`
-      : ermittelt ? '<p class="klein-hinweis klein-hinweis--links">Die App ist auf dem neuesten Stand.</p>' : ''}`;
+      : ermittelt ? '<p class="klein-hinweis klein-hinweis--links">Die App ist auf dem neuesten Stand.</p>' : ''}
+    ${lizenzHinweisHtml('klein-hinweis--links')}`;
 }
 
 // Nur den Versionsbereich auffrischen – ein komplettes Neu-Rendern würde Formulareingaben verwerfen

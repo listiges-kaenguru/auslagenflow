@@ -195,7 +195,14 @@ PDFs in installierten Web-Apps nicht per Download-Link speichert.
 
 Copyright © 2026 listiges-kaenguru
 
-VereinsAuslagen steht unter der **GNU General Public License v3.0** – siehe [`LICENSE`](LICENSE).
+VereinsAuslagen steht unter der **GNU Affero General Public License v3.0** (AGPL-3.0) – siehe
+[`LICENSE`](LICENSE). Bis v3.2.0 stand das Projekt unter der GPL-3.0.
+
+Die AGPL verlangt, dass alle, die die App **über das Netz nutzen**, den Quelltext der laufenden
+Version erhalten können. Dafür verlinken die Anmeldeseite und das Profil (unter „App-Version“) auf
+das Repository. Wer die App **verändert** betreibt, muss den eigenen geänderten Quelltext
+bereitstellen und `QUELLTEXT_URL` in `js/hilfen.js` darauf zeigen lassen (danach `VERSION` in
+`sw.js` erhöhen). Für den unveränderten Betrieb ist nichts zu tun.
 
 Mitgelieferte Fremdkomponenten behalten ihre eigenen Lizenzen:
 
