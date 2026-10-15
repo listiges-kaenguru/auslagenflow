@@ -18,11 +18,11 @@ export const STATUS_LISTE = Object.keys(STATUS);
  * Quelltext der laufenden Version (AGPL-3.0, § 13: Nutzern übers Netz anbieten).
  * Wer die App verändert betreibt, muss hier auf den eigenen geänderten Quelltext verweisen.
  */
-export const QUELLTEXT_URL = 'https://github.com/listiges-kaenguru/AuslagenVerwaltung';
+export const QUELLTEXT_URL = 'https://github.com/listiges-kaenguru/auslagenflow';
 
 /** Kurzer Lizenzhinweis mit Link zum Quelltext (Anmeldeseite und Profil) */
 export function lizenzHinweisHtml(zusatzKlasse = '') {
-  return `<p class="klein-hinweis ${zusatzKlasse}">VereinsAuslagen ist freie Software unter der
+  return `<p class="klein-hinweis ${zusatzKlasse}">AuslagenFlow ist freie Software unter der
     <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">GNU AGPL v3</a> –
     <a href="${QUELLTEXT_URL}" target="_blank" rel="noopener">Quelltext</a></p>`;
 }

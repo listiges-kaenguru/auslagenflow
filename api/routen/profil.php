@@ -80,7 +80,7 @@ route('POST', 'profil/totp/start', function (): void {
     $_SESSION['totp_einrichtung'] = ['geheimnis' => $geheimnis, 'zeit' => time()];
     antworte([
         'geheimnis' => $geheimnis,
-        'uri'       => totpUri($geheimnis, $b['benutzername'], 'VereinsAuslagen'),
+        'uri'       => totpUri($geheimnis, $b['benutzername'], 'AuslagenFlow'),
     ]);
 });
 

@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "VereinsAuslagen",
-  "short_name": "Auslagen",
+  "name": "AuslagenFlow",
+  "short_name": "AuslagenFlow",
   "description": "Vereinsauslagen erfassen, verwalten und einreichen – mit Benutzerkonten.",
   "lang": "de",
   "dir": "ltr",

@@ -1,5 +1,5 @@
 // =============================================
-// VereinsAuslagen (Mehrbenutzer) – Einstiegspunkt
+// AuslagenFlow (Mehrbenutzer) – Einstiegspunkt
 // Ablauf: Serverstatus laden → Einrichtung/Anmeldung → Daten laden → App
 // Routing (Hash), Event-Delegation, Tastenkürzel
 // =============================================

@@ -148,7 +148,7 @@ async function rendereInhalt() {
   let beleg = null;
   if (auslage.hatFoto) {
     beleg = await holeBeleg(auslage.id).catch((err) => {
-      console.error('[VereinsAuslagen] Beleg-Ladefehler:', err);
+      console.error('[AuslagenFlow] Beleg-Ladefehler:', err);
       return null;
     });
   }
@@ -355,7 +355,7 @@ registriereAktionen({
       meldeDatenAenderung();
       if (aktuelleId === id) await rendereInhalt();
     } catch (err) {
-      console.error('[VereinsAuslagen] Beleg-Fehler:', err);
+      console.error('[AuslagenFlow] Beleg-Fehler:', err);
       zeigeToast(`⚠ ${err.message || 'Beleg konnte nicht gespeichert werden'}`, 4000);
     }
   },

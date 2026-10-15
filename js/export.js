@@ -10,6 +10,7 @@ import { ladeAuslagen, holeBeleg, importiereAuslagen, merkeBackup } from './spei
 import { erstelleAuslagenPdf } from './pdf.js';
 import { ladeStammdaten, speichereStammdaten, hatStammdaten, formatiereIban } from './stammdaten.js';
 
+// Alter App-Name bleibt: Backups früherer Versionen müssen importierbar bleiben
 const BACKUP_FORMAT = 'vereinsauslagen-backup';
 const BACKUP_JSON   = 'vereinsauslagen-backup.json';
 
@@ -39,9 +40,9 @@ function auslagenOderFehler(auswahl) {
   return auslagen;
 }
 
-/** Dateiname mit Auswahl und Datum, z. B. VereinsAuslagen_Offen_2026-09-23.csv */
+/** Dateiname mit Auswahl und Datum, z. B. AuslagenFlow_Offen_2026-09-23.csv */
 function dateiname(teil, auswahl, endung) {
-  return sichererDateiname(`VereinsAuslagen_${teil ? `${teil}_` : ''}${auswahlLabel(auswahl)}_${heuteISO()}`) + `.${endung}`;
+  return sichererDateiname(`AuslagenFlow_${teil ? `${teil}_` : ''}${auswahlLabel(auswahl)}_${heuteISO()}`) + `.${endung}`;
 }
 
 /** Belege laden und eindeutige, sprechende Dateinamen vergeben */
@@ -143,7 +144,7 @@ export async function erstelleEinreichung(auslagen) {
       unterschrift: sd.nachname ? `gez. ${sd.nachname}` : ''
     }
   });
-  return { blob, belegFehler, dateiname: sichererDateiname(`VereinsAuslagen_Einreichung_${heuteISO()}`) + '.pdf' };
+  return { blob, belegFehler, dateiname: sichererDateiname(`AuslagenFlow_Einreichung_${heuteISO()}`) + '.pdf' };
 }
 
 // ---------------------------------------------
@@ -171,7 +172,7 @@ export async function teileExport(auswahl) {
   const gesamt = betragAlsText(summe(auslagen));
   const daten = {
     files: dateien,
-    title: 'Vereinsauslagen',
+    title: 'AuslagenFlow',
     text:  `Auslagen (${auswahlLabel(auswahl)}): ${auslagen.length} Posten, gesamt ${gesamt} €`
   };
   if (!navigator.canShare?.(daten)) throw new Error('Teilen dieser Dateien wird nicht unterstützt');
@@ -220,7 +221,7 @@ export async function erstelleBackup() {
   }, null, 2));
 
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-  if (await ladeDateiHerunter(blob, `VereinsAuslagen_Backup_${heuteISO()}.zip`)) merkeBackup();
+  if (await ladeDateiHerunter(blob, `AuslagenFlow_Backup_${heuteISO()}.zip`)) merkeBackup();
   return daten.length;
 }
 
@@ -238,7 +239,7 @@ export async function spieleBackupEin(datei, fortschritt) {
   }
 
   const jsonDatei = zip.file(BACKUP_JSON);
-  if (!jsonDatei) throw new Error('Backup-Datei enthält keine VereinsAuslagen-Daten');
+  if (!jsonDatei) throw new Error('Backup-Datei enthält keine AuslagenFlow-Daten');
 
   let daten;
   try {

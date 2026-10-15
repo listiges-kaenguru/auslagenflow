@@ -1,11 +1,11 @@
 // =============================================
-// VereinsAuslagen (Mehrbenutzer) – Service Worker
+// AuslagenFlow (Mehrbenutzer) – Service Worker
 // Strategie: App-Shell wird bei der Installation vorab gecacht (Cache-First).
 // Daten kommen immer live vom Server: Anfragen an api/ werden nie gecacht.
 // Ein Update entsteht durch Erhöhen von VERSION; die App zeigt dann einen „Aktualisieren“-Hinweis.
 // =============================================
-const VERSION = '3.2.1';
-const CACHE   = `vereinsauslagen-mu-${VERSION}`;
+const VERSION = '3.3.0';
+const CACHE   = `vereinsauslagen-mu-${VERSION}`; // Präfix mit altem App-Namen bewusst beibehalten
 
 const APP_SHELL = [
   './',

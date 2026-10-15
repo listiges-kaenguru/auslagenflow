@@ -1,6 +1,6 @@
 <?php
 // =============================================
-// VereinsAuslagen – API (Einstiegspunkt)
+// AuslagenFlow – API (Einstiegspunkt)
 // Aufruf: api/?r=<route>, z. B. api/?r=auth/login
 // Antworten: JSON {ok: true, …} bzw. {ok: false, fehler: "…"}; Belege als Binärdaten.
 // =============================================
@@ -58,6 +58,6 @@ try {
 } catch (ApiFehler $e) {
     antworteFehler($e->getMessage(), $e->status);
 } catch (Throwable $e) {
-    error_log('[VereinsAuslagen] ' . $e);
+    error_log('[AuslagenFlow] ' . $e);
     antworteFehler('Interner Fehler. Details stehen im Fehlerprotokoll des Servers.', 500);
 }

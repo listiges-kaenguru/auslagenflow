@@ -1,6 +1,6 @@
-# Mitwirken an VereinsAuslagen
+# Mitwirken an AuslagenFlow
 
-Schön, dass du helfen möchtest! VereinsAuslagen ist ein kleines Freizeitprojekt für Vereine auf
+Schön, dass du helfen möchtest! AuslagenFlow ist ein kleines Freizeitprojekt für Vereine auf
 normalem Shared-Webhosting. Beiträge jeder Art sind willkommen: Fehlermeldungen, Ideen,
 Verbesserungen an der Dokumentation und Code.
 
@@ -22,7 +22,7 @@ werden kann.
 ## Fragen und Ideen
 
 - Schau zuerst in die **[offenen Punkte im CHANGELOG](CHANGELOG.md#offene-punkte--ideen)** und in
-  die vorhandenen [Issues](https://github.com/listiges-kaenguru/AuslagenVerwaltung/issues) –
+  die vorhandenen [Issues](https://github.com/listiges-kaenguru/auslagenflow/issues) –
   vielleicht ist deine Idee schon erfasst.
 - Neue Funktionen bitte **erst als Issue vorschlagen**, bevor du Zeit in Code steckst. So können
   wir klären, ob die Idee zum Projekt passt (Zielgruppe: kleine Vereine, einfacher Betrieb per
@@ -46,7 +46,7 @@ Zugangsdaten oder Inhalte von `api/config/config.php`. Screenshots vorher schwä
 ## Sicherheitslücken melden
 
 Sicherheitsprobleme bitte **nicht als öffentliches Issue** melden, sondern vertraulich über
-GitHub: **Security → [Report a vulnerability](https://github.com/listiges-kaenguru/AuslagenVerwaltung/security/advisories/new)**.
+GitHub: **Security → [Report a vulnerability](https://github.com/listiges-kaenguru/auslagenflow/security/advisories/new)**.
 
 Beschreibe die Lücke, die betroffene Version und wenn möglich einen Weg zum Nachstellen. Wir
 melden uns, sobald wir die Meldung geprüft haben, und veröffentlichen eine Korrektur, bevor
@@ -155,6 +155,6 @@ der Datenbank.
 
 ## Lizenz
 
-VereinsAuslagen steht unter der **[GNU Affero General Public License v3.0](LICENSE)**. Mit dem
+AuslagenFlow steht unter der **[GNU Affero General Public License v3.0](LICENSE)**. Mit dem
 Einreichen eines Beitrags erklärst du dich einverstanden, dass er unter derselben Lizenz
 veröffentlicht wird, und bestätigst, dass du die Rechte dazu hast.

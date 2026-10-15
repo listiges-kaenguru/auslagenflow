@@ -7,7 +7,7 @@ import { zeigeToast, registriereAktionen } from './hilfen.js';
 
 const LS_INSTALL_AUSGEBLENDET = 'va_install_ausgeblendet';
 const INSTALL_PAUSE_TAGE = 14;
-const CACHE_PRAEFIX = 'vereinsauslagen-mu-';
+const CACHE_PRAEFIX = 'vereinsauslagen-mu-'; // alter App-Name, damit Updates die alten Caches finden
 
 let installAufforderung = null;
 let wartenderWorker     = null;
@@ -29,7 +29,7 @@ const istIOS = () =>
 async function registriereServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   if (!window.isSecureContext) {
-    console.warn('[VereinsAuslagen] Service Worker benötigt HTTPS oder localhost – Offline-Modus deaktiviert.');
+    console.warn('[AuslagenFlow] Service Worker benötigt HTTPS oder localhost – Offline-Modus deaktiviert.');
     return;
   }
 
@@ -58,7 +58,7 @@ async function registriereServiceWorker() {
       if (document.visibilityState === 'visible') registrierung.update().catch(() => {});
     });
   } catch (err) {
-    console.warn('[VereinsAuslagen] Service Worker konnte nicht registriert werden:', err);
+    console.warn('[AuslagenFlow] Service Worker konnte nicht registriert werden:', err);
   }
 }
 

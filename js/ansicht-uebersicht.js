@@ -234,7 +234,7 @@ registriereAktionen({
     try {
       const blob = await holeEinreichungsPdf(btn.dataset.id);
       const datum = (e?.erstelltAm || '').slice(0, 10);
-      await ladeDateiHerunter(blob, sichererDateiname(`VereinsAuslagen_Einreichung_${datum}`) + '.pdf');
+      await ladeDateiHerunter(blob, sichererDateiname(`AuslagenFlow_Einreichung_${datum}`) + '.pdf');
     } catch (err) {
       zeigeToast(`⚠ ${err.message}`, 5000);
     }

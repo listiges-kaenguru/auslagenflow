@@ -1,9 +1,14 @@
-# VereinsAuslagen
+# AuslagenFlow
+
+**Von der Auslage bis zur Erstattung.**
 
 Web-App (PWA) für kleine Vereine: Mitglieder erfassen ihre Auslagen mit Belegfoto oder PDF,
 reichen sie gesammelt als PDF bei der Kasse ein und sehen jederzeit, was offen, eingereicht oder
 erstattet ist. Die Daten liegen zentral in einer MySQL-Datenbank, jede Person hat ein eigenes Konto.
 Läuft auf normalem Shared-Webhosting mit PHP und MySQL – ohne Build-Schritt, ohne npm oder Composer.
+
+> Bis v3.2.1 hieß die App **VereinsAuslagen**, das Repository `AuslagenVerwaltung`. Alte Links auf
+> GitHub leiten automatisch weiter; Datenbank, Backups und Passkeys bleiben unverändert gültig.
 
 **Funktionen**
 
@@ -87,7 +92,7 @@ mit dem eigenen Admin-Passwort bestätigen.
 
 - **Leere Ziel-Datenbank**: wahlweise *alle Daten übernehmen* (Benutzer, Auslagen, Belege,
   Passkeys) oder nur das eigene Admin-Konto mitnehmen.
-- **Ziel enthält bereits VereinsAuslagen-Daten**: Der Wechsel klappt nur, wenn dort ein aktives
+- **Ziel enthält bereits AuslagenFlow-Daten**: Der Wechsel klappt nur, wenn dort ein aktives
   Admin-Konto mit gleichem Benutzernamen existiert (Schutz vor Aussperren).
 - **Gleiche Datenbank**: Es werden nur die Zugangsdaten (z. B. ein neues DB-Passwort) aktualisiert.
 
@@ -130,7 +135,7 @@ return array (
 
 ## Umstieg von der Einzelplatz-Version
 
-Frühere Versionen von VereinsAuslagen liefen ohne Server und speicherten alles im Browser.
+Frühere Versionen der App (damals noch „VereinsAuslagen“) liefen ohne Server und speicherten alles im Browser.
 Daten daraus lassen sich übernehmen:
 
 
@@ -195,7 +200,7 @@ PDFs in installierten Web-Apps nicht per Download-Link speichert.
 
 Copyright © 2026 listiges-kaenguru
 
-VereinsAuslagen steht unter der **GNU Affero General Public License v3.0** (AGPL-3.0) – siehe
+AuslagenFlow steht unter der **GNU Affero General Public License v3.0** (AGPL-3.0) – siehe
 [`LICENSE`](LICENSE). Bis v3.2.0 stand das Projekt unter der GPL-3.0.
 
 Die AGPL verlangt, dass alle, die die App **über das Netz nutzen**, den Quelltext der laufenden
