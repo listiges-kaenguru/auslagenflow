@@ -143,7 +143,7 @@ function mitFehlerbehandlung(btn, aktion) {
     try {
       await aktion();
     } catch (err) {
-      console.error('[VereinsAuslagen] Export-Fehler:', err);
+      console.error('[AuslagenFlow] Export-Fehler:', err);
       zeigeToast(`⚠ ${err.message || 'Export fehlgeschlagen'} (${err.name || 'Fehler'})`, 8000);
     }
   });
@@ -198,10 +198,10 @@ registriereAktionen({
         + (fehler.length ? ` · ⚠ ${fehler.length} fehlgeschlagen` : '')
         + (zurueckgestuft ? ` · ${zurueckgestuft} mit „Erstattung veranlasst“ stehen jetzt auf „Eingereicht“` : ''),
         zurueckgestuft ? 9000 : 6000);
-      if (fehler.length) console.warn('[VereinsAuslagen] Import-Fehler:', fehler);
+      if (fehler.length) console.warn('[AuslagenFlow] Import-Fehler:', fehler);
       meldeDatenAenderung();
     } catch (err) {
-      console.error('[VereinsAuslagen] Import-Fehler:', err);
+      console.error('[AuslagenFlow] Import-Fehler:', err);
       zeigeToast(`⚠ ${err.message || 'Import fehlgeschlagen'}`, 4000);
     }
   }

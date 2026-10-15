@@ -168,7 +168,7 @@ function passkeyRegistrierungsOptionen(array $benutzer, array $vorhandeneIds): a
     $anzeige = trim($benutzer['vorname'] . ' ' . $benutzer['nachname']) ?: $benutzer['benutzername'];
     return [
         'challenge' => $challenge,
-        'rp'        => ['name' => 'VereinsAuslagen', 'id' => rpId()],
+        'rp'        => ['name' => 'AuslagenFlow', 'id' => rpId()],
         'user'      => [
             'id'          => $benutzer['webauthn_handle'],
             'name'        => $benutzer['benutzername'],

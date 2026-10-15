@@ -160,7 +160,7 @@ registriereAktionen({
           ? `⚠ Eingereicht – ${plural(belegFehler, 'Beleg', 'Belege')} bitte separat beifügen`
           : `✓ ${plural(auswahl.length, 'Auslage', 'Auslagen')} eingereicht`, 4000);
       } catch (err) {
-        console.error('[VereinsAuslagen] Einreichen fehlgeschlagen:', err);
+        console.error('[AuslagenFlow] Einreichen fehlgeschlagen:', err);
         zeigeToast(`⚠ ${err.message || 'PDF konnte nicht erstellt werden'}`, 8000);
       }
     });

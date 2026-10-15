@@ -53,7 +53,7 @@ route('POST', 'einrichtung', function (): void {
     migriere($pdo);
     $uebersicht = dbUebersicht($pdo);
 
-    // Vorhandene VereinsAuslagen-Datenbank: nur anbinden, keinen weiteren Admin anlegen
+    // Vorhandene AuslagenFlow-Datenbank: nur anbinden, keinen weiteren Admin anlegen
     if ($uebersicht['benutzer'] === 0) {
         $stmt = $pdo->prepare('INSERT INTO va_benutzer (benutzername, passwort_hash, rolle, webauthn_handle)
             VALUES (?, ?, \'admin\', ?)');

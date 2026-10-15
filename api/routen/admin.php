@@ -211,7 +211,7 @@ route('POST', 'admin/db', function (): void {
                 $pk->execute([$p['benutzer_id'], $p['credential_id'], $p['public_key'], $p['sign_count'], $p['name'], $p['erstellt_am'], $p['zuletzt_benutzt']]);
             }
         } else {
-            // Bestehende VereinsAuslagen-DB: dort muss es ein aktives Admin-Konto mit gleichem Namen geben
+            // Bestehende AuslagenFlow-DB: dort muss es ein aktives Admin-Konto mit gleichem Namen geben
             $stmt = $ziel->prepare("SELECT COUNT(*) FROM va_benutzer WHERE benutzername = ? AND rolle = 'admin' AND aktiv = 1");
             $stmt->execute([$admin['benutzername']]);
             if (!(int)$stmt->fetchColumn()) {

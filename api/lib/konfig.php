@@ -29,7 +29,7 @@ function speichereKonfig(array $konfig): void
     if (!is_dir($verzeichnis) || !is_writable($verzeichnis)) {
         throw new ApiFehler('Der Ordner api/config ist nicht beschreibbar. Bitte Schreibrechte für den Webserver setzen.', 500);
     }
-    $inhalt = "<?php\n// Automatisch erzeugt von VereinsAuslagen – nicht öffentlich zugänglich machen!\n"
+    $inhalt = "<?php\n// Automatisch erzeugt von AuslagenFlow – nicht öffentlich zugänglich machen!\n"
         . 'return ' . var_export($konfig, true) . ";\n";
     // Atomar schreiben, damit parallele Anfragen nie eine halbe Datei lesen
     $tmp = KONFIG_DATEI . '.' . bin2hex(random_bytes(4)) . '.tmp';

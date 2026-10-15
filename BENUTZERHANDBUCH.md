@@ -1,6 +1,6 @@
-# VereinsAuslagen – Benutzerhandbuch
+# AuslagenFlow – Benutzerhandbuch
 
-Mit VereinsAuslagen hältst du fest, was du für deinen Verein ausgelegt hast. Du fotografierst den
+Mit AuslagenFlow hältst du fest, was du für deinen Verein ausgelegt hast. Du fotografierst den
 Kassenbon und reichst deine Auslagen gesammelt als PDF bei der Kasse ein. Die App zeigt dir
 jederzeit, was noch offen ist, was eingereicht ist und was schon erstattet wurde.
 
@@ -43,7 +43,7 @@ Vereins: einen **Benutzernamen**, ein **Startpasswort** und die **Adresse** der 
 
 ## 2. App auf dem Smartphone installieren
 
-Du kannst VereinsAuslagen wie eine normale App auf den Startbildschirm legen.
+Du kannst AuslagenFlow wie eine normale App auf den Startbildschirm legen.
 
 - **Android (Chrome, Edge, Samsung Internet):** Unter der Kopfzeile erscheint der Hinweis
   „App installieren“. Tippe auf **Installieren**. Alternativ findest du im Browser-Menü
@@ -54,7 +54,7 @@ Du kannst VereinsAuslagen wie eine normale App auf den Startbildschirm legen.
 
 Wenn du den Hinweis mit ✕ schließt, erscheint er 14 Tage lang nicht wieder.
 
-Auch als installierte App braucht VereinsAuslagen eine **Internetverbindung**, weil die Daten auf
+Auch als installierte App braucht AuslagenFlow eine **Internetverbindung**, weil die Daten auf
 dem Server liegen.
 
 **Neue Version verfügbar:** Erscheint dieser Hinweis, tippe auf **Aktualisieren**. Deine Daten
@@ -336,7 +336,7 @@ eine neuere Version, erscheint dort der Hinweis **Aktualisierung verfügbar** mi
 Versionsnummer. Tippe auf **🔄 Jetzt aktualisieren**, die App lädt dann neu. Deine Daten bleiben
 dabei erhalten.
 
-Darunter (und auf der Anmeldeseite) steht, dass VereinsAuslagen freie Software unter der GNU AGPL v3
+Darunter (und auf der Anmeldeseite) steht, dass AuslagenFlow freie Software unter der GNU AGPL v3
 ist. Über **Quelltext** kommst du zum Programmcode der App.
 
 ## 10. Häufige Fragen und Probleme

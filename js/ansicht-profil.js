@@ -353,7 +353,7 @@ function dbHtml() {
           ? 'Gleiche Datenbank wie bisher – es werden nur die Zugangsdaten aktualisiert.'
           : leer
             ? 'Die Ziel-Datenbank ist leer. Die Tabellen werden beim Wechsel angelegt.'
-            : `Die Ziel-Datenbank enthält bereits VereinsAuslagen-Daten (${plural(t.benutzer, 'Benutzer', 'Benutzer')}, ${plural(t.auslagen, 'Auslage', 'Auslagen')}). Nach dem Wechsel gelten deren Konten.`}</p>
+            : `Die Ziel-Datenbank enthält bereits AuslagenFlow-Daten (${plural(t.benutzer, 'Benutzer', 'Benutzer')}, ${plural(t.auslagen, 'Auslage', 'Auslagen')}). Nach dem Wechsel gelten deren Konten.`}</p>
         ${!dbTest.gleicheDb && leer ? `
         <label class="haken">
           <input type="checkbox" name="uebernehmen" form="formDb" checked>
@@ -492,10 +492,10 @@ registriereAktionen({
 
   'codes-kopieren': () => kopiere(neueCodes.join('\n'), '📋 Codes kopiert'),
   'codes-speichern': () => ladeDateiHerunter(
-    new Blob([`VereinsAuslagen – Wiederherstellungscodes für ${aktuellerBenutzer().benutzername}\n`
+    new Blob([`AuslagenFlow – Wiederherstellungscodes für ${aktuellerBenutzer().benutzername}\n`
       + `Erstellt am ${formatiereDatum(new Date().toISOString().slice(0, 10))}. Jeder Code ist einmal gültig.\n\n${neueCodes.join('\n')}\n`],
       { type: 'text/plain' }),
-    'VereinsAuslagen_Wiederherstellungscodes.txt'),
+    'AuslagenFlow_Wiederherstellungscodes.txt'),
   'codes-fertig': () => { neueCodes = null; neuRendern(); },
 
   // --- Passwort-Bestätigungen ---

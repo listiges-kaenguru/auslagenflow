@@ -1,10 +1,10 @@
-# Changelog – VereinsAuslagen
+# Changelog – AuslagenFlow
 
 ## Aktueller Stand
 
 | | |
 |---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.2.1** |
+| App-Version (`sw.js` → `VERSION`) | **v3.3.0** |
 | Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
 | Tests | keine automatisierten Tests |
 
@@ -61,6 +61,19 @@ Der Funktionsumfang ist vollständig umgesetzt (siehe unten). Es gibt keine beka
 ## Versionen
 
 Neueste zuerst.
+
+### v3.3.0 – Neuer Name: AuslagenFlow
+
+- **Umbenennung:** Die App heißt jetzt **AuslagenFlow** („Von der Auslage bis zur Erstattung.“),
+  das Repository `listiges-kaenguru/auslagenflow` (vorher `AuslagenVerwaltung`, GitHub leitet alte
+  Links weiter). Geändert sind alle sichtbaren Namen: Titel, Manifest, Lizenzhinweis mit
+  Quelltext-Link, PDF-Metadaten und -Fußzeile, Dateinamen von Exporten, Einreichungs-PDFs und
+  Wiederherstellungscodes, Aussteller neuer TOTP-Einträge und Anzeigename neuer Passkeys
+- **Bewusst unverändert** (Kompatibilität): Tabellenpräfix `va_`, Header `X-VA-Anfrage`,
+  Backup-Format `vereinsauslagen-backup`, Cache-Präfix `vereinsauslagen-mu-`. Bestehende
+  Authenticator-Einträge und Passkeys funktionieren weiter und behalten ihren alten Namen
+- **Installierte App:** Name auf dem Startbildschirm ändert sich je nach System erst nach dem
+  nächsten Update bzw. Neuinstallation
 
 ### v3.2.1 – Lizenz AGPL-3.0
 

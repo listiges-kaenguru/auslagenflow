@@ -70,8 +70,8 @@ export async function erstelleAuslagenPdf(auslagen, { titel, mitStatus = false, 
   zeichneFusszeilen(ctx);
 
   pdf.setTitle(titel);
-  pdf.setCreator('VereinsAuslagen');
-  pdf.setProducer('VereinsAuslagen');
+  pdf.setCreator('AuslagenFlow');
+  pdf.setProducer('AuslagenFlow');
   pdf.setLanguage('de-DE');
 
   const bytes = await pdf.save();
@@ -138,7 +138,7 @@ async function bereiteBelegeVor(pdf, { PDFDocument }, auslagen) {
         ergebnis.set(a.id, { art: 'bild', bild: await pdf.embedJpg(await alsJpeg(blob)) });
       }
     } catch (err) {
-      console.warn('[VereinsAuslagen] Beleg nicht einbettbar:', a.id, err);
+      console.warn('[AuslagenFlow] Beleg nicht einbettbar:', a.id, err);
       ergebnis.set(a.id, { art: 'fehler', grund: err?.fuerNutzer || 'Das Dateiformat wird nicht unterstützt.' });
     }
   }
@@ -473,7 +473,7 @@ function zeichneBeleg(ctx, auslage, nr, beleg) {
 function zeichneFusszeilen(ctx) {
   const { normal, farbe } = ctx;
   const seiten = ctx.pdf.getPages();
-  const erstellt = `VereinsAuslagen · erstellt am ${formatiereDatum(heuteISO())}`;
+  const erstellt = `AuslagenFlow · erstellt am ${formatiereDatum(heuteISO())}`;
   seiten.forEach((seite, i) => {
     const z = zeichner(ctx, seite);
     z.schreibe(erstellt, RAND, FUSS_Y, normal, 8, farbe.gedaempft);

@@ -141,7 +141,7 @@ async function uebernehmeBeleg(datei) {
     aktualisiereBelegBereich();
     zeigeToast(istPdf(blob) ? '📄 PDF übernommen' : '📷 Foto übernommen');
   } catch (err) {
-    console.error('[VereinsAuslagen] Beleg-Fehler:', err);
+    console.error('[AuslagenFlow] Beleg-Fehler:', err);
     zeigeToast(`⚠ ${err.message || 'Beleg konnte nicht geladen werden'}`, 4000);
   } finally {
     bereich?.removeAttribute('aria-busy');
@@ -193,7 +193,7 @@ async function speichern(form, btn) {
       meldeDatenAenderung();
       navigiere('uebersicht');
     } catch (err) {
-      console.error('[VereinsAuslagen] Speicher-Fehler:', err);
+      console.error('[AuslagenFlow] Speicher-Fehler:', err);
       zeigeToast(`⚠ ${err.message || 'Fehler beim Speichern'}`, 4000);
     }
   });
