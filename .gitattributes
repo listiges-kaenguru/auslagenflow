@@ -3,6 +3,10 @@
 *.ico binary
 *.woff2 binary
 
-# Nicht in Release-ZIPs von GitHub (git archive) aufnehmen
-.gitignore export-ignore
+# Release-Archive (GitHub „Source code“, git archive) enthalten nur, was zum Betrieb gebraucht wird,
+# dazu README und LICENSE. Entwicklungsdateien bleiben draußen.
 .gitattributes export-ignore
+.gitignore export-ignore
+CLAUDE.md export-ignore
+CONTRIBUTING.md export-ignore
+CHANGELOG.md export-ignore
