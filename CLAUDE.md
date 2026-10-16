@@ -1,7 +1,19 @@
-# CLAUDE.md – AuslagenFlow
+# AuslagenFlow – Hinweise für Claude
 
-Anweisungen für Claude Code. Zuerst **`CHANGELOG.md`** lesen (aktueller Stand, offene Punkte),
-für Betrieb/Installation die **`README.md`**.
+Projektseite und Anleitung im Projekt `../auslagenflow-web` (<https://auslagenflow.schmaralde.de/>),
+Demo im Projekt `../auslagenflow-demo`, GitHub-Wiki in `../auslagenflow.wiki`.
+
+## Orientierung
+
+- `README.md` – Installation, Betrieb, Sicherheit, Aufbau (für Betreiber/Entwickler)
+- `CHANGELOG.md` – Änderungen je Version; jede Änderung unter `## [Unveröffentlicht]` eintragen
+- `IDEEN.md` – ToDo und Ideen; **zuerst lesen**, Erledigtes ins CHANGELOG
+- `docs/ENTWICKLUNG.md` – technischer Stand: Versionen, Funktionen, API-Routen, Datenbank
+- `BENUTZERHANDBUCH.md` – Bedienung für Vereinsmitglieder und Admins, du-Form, ohne Technikjargon
+  (Quelle der Anleitung auf der Projektseite, daher nicht verschieben)
+- `CONTRIBUTING.md` – Mitwirken, Checkliste vor dem Pull Request
+- GitHub-Wiki – lokal in `../auslagenflow.wiki` (Remote `auslagenflow.wiki.git`, Branch `master`);
+  Inhalte aus README, Benutzerhandbuch und `docs/ENTWICKLUNG.md`, nach Themen aufgeteilt
 
 ## Worum es geht
 
@@ -82,32 +94,27 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
 
 ## Checkliste bei Änderungen
 
-1. **Frontend geändert?** → `VERSION` in `sw.js` erhöhen (reine SemVer ohne „v“, aktuell 3.1.x).
-   In Doku, CHANGELOG, Tags, Releases und PR-Titeln steht die Version mit „v“ (z. B. v3.1.1).
+1. **Frontend geändert?** → `VERSION` in `sw.js` erhöhen (reine SemVer ohne „v“) und in
+   `docs/ENTWICKLUNG.md` nachtragen. Tags, Releases und PR-Titel mit „v“ (z. B. v3.1.1), im CHANGELOG
+   wie in allen Repos `## [3.1.1] – JJJJ-MM-TT`.
    Neue Dateien in `APP_SHELL` eintragen, sonst fehlen sie offline.
 2. **Schema geändert?** → `SCHEMA_VERSION` in `api/lib/db.php` erhöhen und in `migriere()` einen
    Block `if ($version < N) { … }` ergänzen. Neue Tabellen auch in `TABELLEN` (Reihenfolge
-   nach Fremdschlüsseln) aufnehmen, damit der DB-Wechsel sie kopiert.
+   nach Fremdschlüsseln) aufnehmen, damit der DB-Wechsel sie kopiert. Schema in `docs/ENTWICKLUNG.md` nachziehen.
 3. **Neue API-Route?** → in passender `api/routen/*.php` registrieren; Frontend ruft über
-   `apiGet/apiPost/apiPut/apiDelete` und `mitId()` auf.
+   `apiGet/apiPost/apiPut/apiDelete` und `mitId()` auf. Routentabelle in `docs/ENTWICKLUNG.md` ergänzen.
 4. **Backup-Format berührt?** → Kompatibilität mit Backups der früheren Einzelplatz-Version erhalten
    (`BACKUP_FORMAT` in `export.js`). Die Datensicherung ist im Betrieb ausgeblendet; zum Testen in der
    lokalen `api/config/config.php` `'datensicherung' => true` setzen (nie im Repository).
-5. **`CHANGELOG.md` aktualisieren** (Änderungsprotokoll + offene Punkte). Bei nutzersichtbaren
+5. **`CHANGELOG.md` und `IDEEN.md` aktualisieren.** Bei nutzersichtbaren
    Änderungen auch **`BENUTZERHANDBUCH.md`** (Bedienung, Knopf-Beschriftungen exakt wie in der UI)
    und bei Betrieb/Installation die README anpassen.
-6. **Wiki nachziehen** (`../auslagenflow.wiki`, eigenes Git-Repo): Die Seiten spiegeln README,
-   Benutzerhandbuch und CHANGELOG (API-Routen, Schema, Roadmap) – geänderte Abschnitte dort
+6. **Projektseite und Demo mitziehen:** neue Funktionen auf `../auslagenflow-web` beschreiben; nach einem
+   Release dort `scripts/build-download.sh`, in `../auslagenflow-demo` `scripts/build.sh` ausführen und an den
+   Upload erinnern. Neue Entwicklungsdateien in `.gitattributes` als `export-ignore` eintragen.
+7. **Wiki nachziehen** (`../auslagenflow.wiki`, eigenes Git-Repo): Die Seiten spiegeln README,
+   Benutzerhandbuch, `docs/ENTWICKLUNG.md` (API-Routen, Schema) und `IDEEN.md` (Roadmap) – geänderte Abschnitte dort
    ebenfalls anpassen und im Wiki-Repo committen.
-
-## Dokumentation
-
-- `README.md` – Installation, Betrieb, Sicherheit, Aufbau (für Betreiber/Entwickler)
-- `BENUTZERHANDBUCH.md` – Bedienung für Vereinsmitglieder und Admins, du-Form, ohne Technikjargon
-- `CHANGELOG.md` – aktueller Stand und Änderungsprotokoll
-- `CLAUDE.md` – diese Datei
-- GitHub-Wiki – lokal in `../auslagenflow.wiki` (Remote `auslagenflow.wiki.git`,
-  Branch `master`); Inhalte aus README, Benutzerhandbuch und CHANGELOG, nach Themen aufgeteilt
 
 ## Testen / Ausführen
 

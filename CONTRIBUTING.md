@@ -21,7 +21,7 @@ werden kann.
 
 ## Fragen und Ideen
 
-- Schau zuerst in die **[offenen Punkte im CHANGELOG](CHANGELOG.md#offene-punkte--ideen)** und in
+- Schau zuerst in die **[offenen Punkte in IDEEN.md](IDEEN.md)** und in
   die vorhandenen [Issues](https://github.com/listiges-kaenguru/auslagenflow/issues) –
   vielleicht ist deine Idee schon erfasst.
 - Neue Funktionen bitte **erst als Issue vorschlagen**, bevor du Zeit in Code steckst. So können
@@ -145,7 +145,7 @@ der Datenbank.
 
 - Commit-Nachrichten auf Deutsch, kurz und im Präsens bzw. als Zusammenfassung, gern mit
   Bereich vorweg, z. B. `Einreichen: PDF enthält Ort der Stammdaten` oder
-  `CHANGELOG: offene Punkte ergänzt`.
+  `IDEEN: E-Mail-Versand ergänzt`.
 - Ein Commit pro logischer Änderung; bitte keine reinen Formatierungsänderungen mit
   inhaltlichen Änderungen mischen.
 - Im Pull Request beschreiben, **was** sich ändert und **warum**, und wie du getestet hast. Bei
