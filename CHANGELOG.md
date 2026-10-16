@@ -9,6 +9,8 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+## [3.4.0] – 2026-10-17 – Versionsprüfung gegen GitHub
+
 ### Hinzugefügt
 - **Versionsprüfung gegen GitHub:** Das Profil vergleicht unter „App-Version“ die installierte Version mit dem
   neuesten Release auf GitHub. Ist dort eine neuere erschienen, erscheint der Hinweis „Neue Version auf GitHub“
