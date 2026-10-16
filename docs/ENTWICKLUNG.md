@@ -7,7 +7,7 @@ Checkliste für Änderungen stehen in [`CLAUDE.md`](../CLAUDE.md) und [`CONTRIBU
 
 | | |
 |---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.3.1** |
+| App-Version (`sw.js` → `VERSION`) | **v3.4.0** |
 | Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
 | Tests | keine automatisierten Tests |
 
@@ -48,7 +48,7 @@ Offene Punkte stehen in [`IDEEN.md`](../IDEEN.md), Änderungen je Version im [`C
 |---|---|
 | `einrichtung.php` | `GET status`, `POST einrichtung` |
 | `anmeldung.php` | `POST anmeldung/passwort`, `anmeldung/mfa`, `anmeldung/passkey-optionen`, `anmeldung/passkey`, `abmeldung` |
-| `profil.php` | `GET profil`, `PUT profil/stammdaten`, `POST profil/passwort`, `profil/totp/{start,bestaetigen,deaktivieren,neue-codes}`, `POST/DELETE profil/passkey`, `POST profil/passkey-optionen` |
+| `profil.php` | `GET profil`, `GET profil/version` (installierte Version + neuestes GitHub-Release), `PUT profil/stammdaten`, `POST profil/passwort`, `profil/totp/{start,bestaetigen,deaktivieren,neue-codes}`, `POST/DELETE profil/passkey`, `POST profil/passkey-optionen` |
 | `auslagen.php` | `GET/POST/PUT/DELETE auslagen`, `GET/PUT/DELETE beleg` |
 | `einreichungen.php` | `GET/POST/DELETE einreichungen`, `POST einreichungen/{status,zurueckziehen,uebernahme}`, `GET/PUT einreichungen/pdf` |
 | `kommentare.php` | `GET/POST/DELETE kommentare`, `POST kommentare/gelesen`, `GET kommentare/ungelesen` |

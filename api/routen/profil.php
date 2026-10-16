@@ -1,6 +1,7 @@
 <?php
 // =============================================
 // PROFIL: Stammdaten, Passwort, TOTP, Passkeys
+// App-Version: installierte Version (sw.js) und neuestes GitHub-Release, zwischengespeichert in va_meta.
 // Kritische Änderungen (TOTP abschalten, neue Codes) verlangen das aktuelle Passwort.
 // =============================================
 declare(strict_types=1);
@@ -144,4 +145,80 @@ route('DELETE', 'profil/passkey', function (): void {
     $b = erfordereLogin();
     abfrage('DELETE FROM va_passkeys WHERE id = ? AND benutzer_id = ?', [(int)($_GET['id'] ?? 0), $b['id']]);
     antworte(['benutzer' => benutzerFuerClient($b)]);
+});
+
+// ---------------------------------------------
+// App-Version
+// ---------------------------------------------
+// Der Server fragt GitHub (nicht der Browser): keine Verbindung der Mitglieder zu Dritten, CSP bleibt
+// unverändert, und dank Zwischenspeicher reicht eine Anfrage je Installation und Halbtag.
+const RELEASE_API = 'https://api.github.com/repos/listiges-kaenguru/auslagenflow/releases/latest';
+const RELEASE_GUELTIG_S = 12 * 3600;
+const RELEASE_FEHLER_PAUSE_S = 3600;  // nach einem Fehlschlag erst nach einer Stunde erneut fragen
+
+/** Auf dem Server installierte Version – steht nur in sw.js (VERSION) */
+function installierteVersion(): ?string
+{
+    $skript = @file_get_contents(dirname(__DIR__, 2) . '/sw.js') ?: '';
+    return preg_match("/const VERSION\s*=\s*'([^']+)'/", $skript, $m) ? $m[1] : null;
+}
+
+/** Versionsnummer des neuesten Releases von GitHub oder null (kein Netz, Limit, gesperrt …) */
+function frageGithubRelease(): ?string
+{
+    $kopf = ['Accept: application/vnd.github+json', 'User-Agent: AuslagenFlow'];
+    $roh = false;
+    $status = 0;
+    if (function_exists('curl_init')) {
+        $ch = curl_init(RELEASE_API);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => $kopf,
+            CURLOPT_CONNECTTIMEOUT => 3, CURLOPT_TIMEOUT => 5,
+        ]);
+        $roh = curl_exec($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    } elseif (ini_get('allow_url_fopen')) {
+        $kontext = stream_context_create(['http' => ['header' => $kopf, 'timeout' => 5, 'ignore_errors' => true]]);
+        $roh = @file_get_contents(RELEASE_API, false, $kontext);
+        $status = preg_match('#^HTTP/\S+ (\d+)#', $http_response_header[0] ?? '', $m) ? (int)$m[1] : 0;
+    }
+    if (!is_string($roh) || $status !== 200) return null;
+    $tag = json_decode($roh, true)['tag_name'] ?? null;
+    return is_string($tag) && preg_match('/^v?(\d+\.\d+\.\d+)$/', $tag, $m) ? $m[1] : null;
+}
+
+/** Neuestes Release aus dem Zwischenspeicher bzw. frisch von GitHub: ['version' => ?string, 'geprueft' => ?int] */
+function neuestesRelease(): array
+{
+    $roh = abfrage("SELECT wert FROM va_meta WHERE schluessel = 'github_release'")->fetchColumn();
+    $gemerkt = is_string($roh) ? (json_decode($roh, true) ?: []) : [];
+    $version = is_string($gemerkt['version'] ?? null) ? $gemerkt['version'] : null;
+    $geprueft = is_int($gemerkt['geprueft'] ?? null) ? $gemerkt['geprueft'] : null;
+    $versucht = is_int($gemerkt['versucht'] ?? null) ? $gemerkt['versucht'] : 0;
+
+    $jetzt = time();
+    $frisch = $geprueft !== null && $jetzt - $geprueft < RELEASE_GUELTIG_S;
+    if ($frisch || $jetzt - $versucht < RELEASE_FEHLER_PAUSE_S) {
+        return ['version' => $version, 'geprueft' => $geprueft];
+    }
+
+    $neu = frageGithubRelease();
+    if ($neu !== null) {
+        $version = $neu;
+        $geprueft = $jetzt;
+    }
+    $wert = json_encode(['version' => $version, 'geprueft' => $geprueft, 'versucht' => $jetzt]);
+    abfrage("INSERT INTO va_meta (schluessel, wert) VALUES ('github_release', ?)
+        ON DUPLICATE KEY UPDATE wert = VALUES(wert)", [$wert]);
+    return ['version' => $version, 'geprueft' => $geprueft];
+}
+
+route('GET', 'profil/version', function (): void {
+    erfordereLogin();
+    $release = neuestesRelease();
+    antworte([
+        'installiert' => installierteVersion(),
+        'neueste'     => $release['version'],
+        'geprueftAm'  => $release['geprueft'] !== null ? gmdate('Y-m-d\TH:i:s\Z', $release['geprueft']) : null,
+    ]);
 });
