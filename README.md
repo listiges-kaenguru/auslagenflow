@@ -184,7 +184,9 @@ Weitergeben an die Vereinsmitglieder.
 
 ## Entwicklung
 
-- **[`CHANGELOG.md`](CHANGELOG.md)** – aktueller Stand, API-Routen, Änderungsprotokoll, offene Punkte
+- **[`CHANGELOG.md`](CHANGELOG.md)** – Änderungen je Version
+- **[`IDEEN.md`](IDEEN.md)** – offene Punkte und Ideen
+- **[`docs/ENTWICKLUNG.md`](docs/ENTWICKLUNG.md)** – technischer Stand, API-Routen, Datenbank
 - **[`CONTRIBUTING.md`](CONTRIBUTING.md)** – wie du Fehler meldest und Änderungen beiträgst
 - **[`CLAUDE.md`](CLAUDE.md)** – Konventionen und Checkliste für Änderungen (auch für Claude Code)
 - Es gibt keine automatisierten Tests. Zum Ausprobieren genügt ein lokaler Webserver mit PHP und

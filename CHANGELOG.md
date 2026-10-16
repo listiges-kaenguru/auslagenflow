@@ -1,68 +1,19 @@
 # Changelog – AuslagenFlow
 
-## Aktueller Stand
+Alle nennenswerten Änderungen an AuslagenFlow stehen in dieser Datei, die neuesten oben.
 
-| | |
-|---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.3.1** |
-| Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
-| Tests | keine automatisierten Tests |
+Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
+die Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
+Technischer Stand (API-Routen, Datenbank): [`docs/ENTWICKLUNG.md`](docs/ENTWICKLUNG.md),
+offene Punkte: [`IDEEN.md`](IDEEN.md).
 
-Der Funktionsumfang ist vollständig umgesetzt (siehe unten). Es gibt keine bekannten offenen Fehler.
+## [Unveröffentlicht]
 
-## Funktionen
+### Intern
+- Metadaten aufgeräumt: Offene Punkte stehen jetzt in `IDEEN.md`, die technische Referenz (Funktionen,
+  API-Routen, Datenbank) in `docs/ENTWICKLUNG.md`; dieses Changelog enthält nur noch die Versionen.
 
-**Auslagen**
-- Erfassen mit Datum, Händler, Betrag, Notiz, Beleg (Foto wird verkleinert, oder PDF, max. 15 MB)
-- Übersicht mit Status offen / eingereicht / Erstattung veranlasst / erstattet; offene Auslagen
-  einzeln, eingereichte gebündelt nach Einreichung. Detail-Bottom-Sheet zum Bearbeiten offener Auslagen
-- Einreichen: offene Auslagen einzeln auswählen → PDF (Übersicht + Stammdaten + Belege), das mit der
-  Einreichung gespeichert wird und für Mitglied, Kassenwart und Vorstand abrufbar bleibt;
-  jede Einreichung ist eine feste Gruppe, deren Status sich nur gemeinsam ändert (zurückziehen,
-  erstattet, veranlasst, ablehnen). Zurückgezogene/abgelehnte bleiben unter „Abgebrochen“ erhalten,
-  erstattete wandern nach 5 Minuten nach „Abgeschlossen“
-- Rückfragen: Kommentarverlauf je Einreichung (Mitglied, Kassenwart, Vorstand), Ungelesen-Hinweise;
-  Einreichungen und Verläufe sind einklappbar
-- Export (CSV/PDF/ZIP), Datensicherung als ZIP, Import von Backups der früheren Einzelplatz-Version
-- PWA: installierbar, App-Shell offline, Update-Hinweis, Versionsanzeige im Profil;
-  Hell/Dunkel/System-Farbschema
-
-**Mehrbenutzer / Server**
-- Ersteinrichtung im Browser (DB-Zugang + erster Admin → `api/config/config.php`)
-- Login/Logout, Pflicht-Passwortwechsel beim ersten Login, Passwort ändern
-- TOTP-2FA mit 10 Wiederherstellungscodes; Passkeys (WebAuthn) als Alternative
-- Stammdaten (Name, IBAN, Ort) im Profil, gehen ins Einreichungs-PDF
-- Kassenrollen: **Kassenwart** sieht eingereichte Auslagen aller Mitglieder (Ansicht „Kasse“, mit
-  Belegen und IBAN) und setzt „Erstattung veranlasst“; **Vorstand** sieht dasselbe lesend;
-  beide können eine Einreichung ablehnen (→ wieder offen beim Mitglied)
-- Admin: Benutzer anlegen/sperren/löschen, Rolle und Kassenrolle ändern, Passwort und MFA zurücksetzen,
-  Datenbank-Verbindung wechseln (mit optionaler Datenübernahme)
-- Sicherheit: CSRF (Header + Origin), Brute-Force-Sperre, Sitzungs-Generationen, strikte CSP
-
-## API-Routen (`api/?r=…`)
-
-| Datei | Routen |
-|---|---|
-| `einrichtung.php` | `GET status`, `POST einrichtung` |
-| `anmeldung.php` | `POST anmeldung/passwort`, `anmeldung/mfa`, `anmeldung/passkey-optionen`, `anmeldung/passkey`, `abmeldung` |
-| `profil.php` | `GET profil`, `PUT profil/stammdaten`, `POST profil/passwort`, `profil/totp/{start,bestaetigen,deaktivieren,neue-codes}`, `POST/DELETE profil/passkey`, `POST profil/passkey-optionen` |
-| `auslagen.php` | `GET/POST/PUT/DELETE auslagen`, `GET/PUT/DELETE beleg` |
-| `einreichungen.php` | `GET/POST/DELETE einreichungen`, `POST einreichungen/{status,zurueckziehen,uebernahme}`, `GET/PUT einreichungen/pdf` |
-| `kommentare.php` | `GET/POST/DELETE kommentare`, `POST kommentare/gelesen`, `GET kommentare/ungelesen` |
-| `kasse.php` | `GET kasse/auslagen`, `GET kasse/beleg`, `GET kasse/einreichung/pdf`, `POST kasse/einreichung/status`, `POST kasse/einreichung/ablehnen` (Kassenwart/Vorstand) |
-| `admin.php` | `GET/POST/PUT admin/benutzer`, `POST admin/benutzer/{passwort,mfa-zuruecksetzen,loeschen}`, `GET/POST admin/db`, `POST admin/db/test` |
-
-## Datenbank (Schema 6)
-
-`va_meta`, `va_benutzer` (mit `kassenrolle`), `va_wiederherstellung`, `va_passkeys`,
-`va_einreichungen` (mit `art`: einreichung/uebernahme, `zustand`: aktiv/abgelehnt/zurueckgezogen, `erstattet_am`, Eckdaten), `va_auslagen` (mit `einreichung_id`, `veranlasst_am`, `veranlasst_von`),
-`va_belege` (LONGBLOB), `va_einreichung_pdfs` (LONGBLOB), `va_kommentare`, `va_kommentar_gelesen`, `va_anmeldeversuche`.
-
-## Versionen
-
-Neueste zuerst.
-
-### v3.3.1 – Code aufgeräumt
+## [3.3.1] – 2026-10-16 – Code aufgeräumt
 
 Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verhalten, gleiche API):
 
@@ -77,7 +28,7 @@ Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verha
   (`lib/sitzung.php`); `dbEingabe()` nach `lib/db.php` und auch für die Ersteinrichtung genutzt;
   die Kassen-Abfrage verwendet `AUSLAGEN_SPALTEN`/`AUSLAGEN_JOINS` statt einer Kopie von `AUSLAGEN_SELECT`
 
-### v3.3.0 – Neuer Name: AuslagenFlow
+## [3.3.0] – 2026-10-15 – Neuer Name: AuslagenFlow
 
 - **Umbenennung:** Die App heißt jetzt **AuslagenFlow** („Von der Auslage bis zur Erstattung.“),
   das Repository `listiges-kaenguru/auslagenflow` (vorher `AuslagenVerwaltung`, GitHub leitet alte
@@ -90,7 +41,7 @@ Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verha
 - **Installierte App:** Name auf dem Startbildschirm ändert sich je nach System erst nach dem
   nächsten Update bzw. Neuinstallation
 
-### v3.2.1 – Lizenz AGPL-3.0
+## [3.2.1] – 2026-10-14 – Lizenz AGPL-3.0
 
 - **Lizenzwechsel:** VereinsAuslagen steht jetzt unter der **GNU AGPL v3** statt der GPL v3
   (`LICENSE`). Wer die App übers Netz nutzt, kann den Quelltext beziehen
@@ -99,7 +50,7 @@ Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verha
   (`QUELLTEXT_URL`/`lizenzHinweisHtml()` in `js/hilfen.js`). Betreiber einer geänderten Fassung
   stellen die Adresse auf ihren eigenen Quelltext um (README → Lizenz)
 
-### v3.2.0 – Verlauf und Rückfragen
+## [3.2.0] – 2026-10-05 – Verlauf und Rückfragen
 
 - **Kommentare je Einreichung** (`va_kommentare`): Einreicher, Kassenwart und Vorstand schreiben in
   einem Verlauf, optional mit Bezug auf eine Auslage („zu: LadenA, 11,50 €“, als Text gespeichert).
@@ -154,7 +105,7 @@ Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verha
 - **Schema 5**: `va_kommentare`, `va_kommentar_gelesen`, `va_einreichungen.zustand/beendet_am/anzahl/summe`;
   **Schema 6**: `va_einreichungen.erstattet_am`
 
-### v3.1.1 – Kassenwart, Vorstand und Einreichungen
+## [3.1.1] – 2026-10-05 – Kassenwart, Vorstand und Einreichungen
 
 Ab dieser Version tragen Versionsnummern in Doku, Tags und Releases ein „v“ (`VERSION` in `sw.js`
 bleibt reine SemVer). Eine Version 3.1.0 wurde nicht veröffentlicht.
@@ -196,7 +147,7 @@ bleibt reine SemVer). Eine Version 3.1.0 wurde nicht veröffentlicht.
 - Export-PDF: Status-Spalte bricht um, damit „Erstattung veranlasst“ passt
 - DB-Wechsel kopiert Belege und Einreichungs-PDFs zeilenweise (`BLOB_TABELLEN`)
 
-### 3.0.6
+## [3.0.6] – 2026-10-05
 
 - Profil: neuer Bereich „App-Version“ ganz unten zeigt die laufende Version; liegt ein Update
   bereit, zusätzlich „Aktualisierung verfügbar“ mit neuer Versionsnummer und Knopf
@@ -205,24 +156,14 @@ bleibt reine SemVer). Eine Version 3.1.0 wurde nicht veröffentlicht.
   `pwa.js` meldet Änderungen per Event `version-geaendert`. Für Worker vor 3.0.6 wird die
   laufende Version aus dem Cache-Namen abgeleitet, ohne Service Worker aus `sw.js`
 
-### 3.0.5
+## [3.0.5] – 2026-10-05
 
 - Routing: Hash in der URL wird nur noch gegen eigene Ansichten geprüft (`Object.hasOwn`);
   Links wie `#__proto__` oder `#constructor` führten sonst zu einem Fehler bzw. leerer Ansicht
   (CodeQL-Hinweis „Unvalidated dynamic method call“)
 - `CONTRIBUTING.md`: Anleitung für Fehlermeldungen, Sicherheitsmeldungen und Pull Requests
 
-### 3.0.4 – erste öffentliche Version
+## [3.0.4] – 2026-10-04 – erste öffentliche Version
 
 - Mehrbenutzer-Version mit PHP-Backend und MySQL/MariaDB (Funktionsumfang siehe oben)
 - Benutzerhandbuch für Mitglieder und Admins (`BENUTZERHANDBUCH.md`)
-
-## Offene Punkte / Ideen
-
-- [ ] Automatisierte Tests zumindest für die API-Routen
-- [ ] Ende-zu-Ende-Test auf echtem Webhosting (Apache mit `.htaccess`, nginx-Regeln aus der README)
-- [x] Weitere Benutzerrollen Kassenwart und Vorstand (v3.1.1)
-- [x] Kommentarfunktion für Einreichungen (v3.2.0, Konzept im Tag v3.2.0:
-  [docs/konzept-kommentarfunktion.md](https://github.com/listiges-kaenguru/AuslagenVerwaltung/blob/v3.2.0/docs/konzept-kommentarfunktion.md))
-- [ ] E-Mail-Versand über SMTP (Zugangsdaten im Admin-Bereich, ohne Fremdbibliothek), z. B. um
-  den Kassenwart auf neue Einreichungen und Mitglieder auf Rückfragen hinzuweisen
