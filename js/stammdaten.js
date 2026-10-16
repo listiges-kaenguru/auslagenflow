@@ -28,7 +28,7 @@ export async function speichereStammdaten(daten) {
 // ---------------------------------------------
 // IBAN
 // ---------------------------------------------
-export function normalisiereIban(iban) {
+function normalisiereIban(iban) {
   return String(iban ?? '').replace(/\s+/g, '').toUpperCase();
 }
 
@@ -38,7 +38,7 @@ export function formatiereIban(iban) {
 }
 
 /** Formal gültig? (Aufbau + Prüfsumme nach ISO 13616, Modulo 97) – der Server prüft zusätzlich */
-export function istGueltigeIban(iban) {
+function istGueltigeIban(iban) {
   const s = normalisiereIban(iban);
   if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(s)) return false;
   if (s.startsWith('DE') && s.length !== 22) return false;

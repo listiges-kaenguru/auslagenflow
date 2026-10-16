@@ -76,6 +76,18 @@ function erfordereAdmin(): array
     return $benutzer;
 }
 
+/** Kassenwart oder Vorstand? (Einblick in eingereichte Auslagen aller Mitglieder) */
+function hatKassenrolle(array $benutzer): bool
+{
+    return in_array($benutzer['kassenrolle'], ['kassenwart', 'vorstand'], true);
+}
+
+/** Benutzer frisch aus der Datenbank fürs Frontend (nach eigenen Änderungen) */
+function ladeBenutzerFuerClient(int $id): array
+{
+    return benutzerFuerClient(abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$id])->fetch());
+}
+
 /**
  * Kassenwart oder Vorstand: Einblick in eingereichte Auslagen aller Mitglieder.
  * $schreibend = true → nur Kassenwart („Erstattung veranlasst“); der Vorstand darf sonst nur lesen
@@ -84,8 +96,8 @@ function erfordereAdmin(): array
 function erfordereKassenrolle(bool $schreibend = false): array
 {
     $benutzer = erfordereLogin();
-    $erlaubt = $schreibend ? ['kassenwart'] : ['kassenwart', 'vorstand'];
-    if (!in_array($benutzer['kassenrolle'], $erlaubt, true)) {
+    $erlaubt = $schreibend ? $benutzer['kassenrolle'] === 'kassenwart' : hatKassenrolle($benutzer);
+    if (!$erlaubt) {
         throw new ApiFehler($schreibend ? 'Nur für den Kassenwart.' : 'Nur für Kassenwart und Vorstand.', 403);
     }
     return $benutzer;

@@ -4,6 +4,9 @@
 // =============================================
 import { apiGet, apiPost } from './api.js';
 
+/** Mindestlänge für Passwörter (wie MIN_PASSWORT_LAENGE im Server) */
+export const MIN_PASSWORT = 10;
+
 let status = { eingerichtet: true, benutzer: null, mfaAusstehend: false, maxBelegBytes: 15 * 1024 * 1024, maxPdfBytes: 0, passkeysMoeglich: false };
 
 export async function ladeStatus() {

@@ -14,7 +14,7 @@
 import {
   statusInfo, escapeHtml, formatiereDatum, formatiereBetrag, formatiereZeitpunkt, plural, summe,
   gruppiereNachEinreichung, einreichungsText,
-  sichererDateiname, dateiEndung, ladeDateiHerunter, zeigeToast, mitLadezustand, registriereAktionen,
+  sichererDateiname, dateiEndung, ladeDateiHerunter, zeigeToast, mitLadezustand, mitFehlerToast, registriereAktionen,
   meldeDatenAenderung
 } from './hilfen.js';
 import { api, apiGet, apiPost, mitId } from './api.js';
@@ -90,14 +90,16 @@ export function rendereKasse(container) {
   }
 
   const eckdaten = new Map(einreichungen.map((e) => [e.id, e]));
+  // Einmal gruppieren; alle Auslagen einer Einreichung haben denselben Status
+  const alleGruppen = gruppiere(auslagen);
   const gruppenFuer = (f) => {
-    if (f === 'alle') return gruppiere(auslagen);
+    if (f === 'alle') return alleGruppen;
     // Stabil, solange der Filter gewählt ist: was beim Wählen ungelesen war, bleibt sichtbar,
     // auch wenn es beim Aufklappen gelesen wird (sonst spränge es z. B. nach dem Antworten weg)
     if (f === 'ungelesen') {
-      return gruppiere(auslagen).filter((g) => eckdaten.get(g.id)?.ungelesen > 0 || (filter === f && festgehalten.has(g.id)));
+      return alleGruppen.filter((g) => eckdaten.get(g.id)?.ungelesen > 0 || (filter === f && festgehalten.has(g.id)));
     }
-    return gruppiere(auslagen.filter((a) => a.status === f));
+    return alleGruppen.filter((g) => g.status === f);
   };
   const gruppen = gruppenFuer(filter);
   const gefiltert = gruppen.flatMap((g) => g.auslagen);
@@ -146,15 +148,24 @@ function gruppiere(liste) {
   return gruppiereNachEinreichung(liste).map((g) => ({ ...g, mitglied: g.auslagen[0].mitglied }));
 }
 
+/** Aktionen je Status: veranlassen/zurücknehmen nur Kassenwart, ablehnen auch Vorstand */
+function kassenKnoepfeHtml(g, id) {
+  const kassenwart = istKassenwart();
+  if (g.status === 'eingereicht') {
+    const veranlassen = kassenwart ? `<button type="button" class="btn btn-primaer btn-klein" data-aktion="kasse-veranlassen" data-id="${id}">
+        💸 Erstattung veranlasst (${formatiereBetrag(summe(g.auslagen))})</button>` : '';
+    const ablehnen = ablehnenOffen.has(g.id) ? '' : `<button type="button" class="btn btn-gefahr btn-klein" data-aktion="kasse-ablehnen" data-id="${id}">✖ Nicht genehmigen</button>`;
+    return veranlassen + ablehnen;
+  }
+  if (g.status === 'veranlasst' && kassenwart) {
+    return `<button type="button" class="btn btn-sekundaer btn-klein" data-aktion="kasse-zuruecknehmen" data-id="${id}">↩ Veranlassung zurücknehmen</button>`;
+  }
+  return '';
+}
+
 function gruppeHtml(g, eckdaten, standardOffen) {
   const id = escapeHtml(g.id);
-  const ablehnen = ablehnenOffen.has(g.id) ? '' : `<button type="button" class="btn btn-gefahr btn-klein" data-aktion="kasse-ablehnen" data-id="${id}">✖ Nicht genehmigen</button>`;
-  const knoepfe = g.status === 'eingereicht'
-    ? (istKassenwart() ? `<button type="button" class="btn btn-primaer btn-klein" data-aktion="kasse-veranlassen" data-id="${id}">
-        💸 Erstattung veranlasst (${formatiereBetrag(summe(g.auslagen))})</button>` : '') + ablehnen
-    : (g.status === 'veranlasst' && istKassenwart()
-      ? `<button type="button" class="btn btn-sekundaer btn-klein" data-aktion="kasse-zuruecknehmen" data-id="${id}">↩ Veranlassung zurücknehmen</button>`
-      : '');
+  const knoepfe = kassenKnoepfeHtml(g, id);
   const info = statusInfo(g.status);
   const pdf = g.hatPdf
     ? `<button type="button" class="btn btn-sekundaer btn-klein" data-aktion="kasse-einreichung-pdf" data-id="${id}">📄 Einreichungs-PDF</button>`
@@ -278,28 +289,20 @@ registriereAktionen({
       'Einreichung zurückgegeben – die Auslagen sind wieder offen');
   },
 
-  'kasse-einreichung-pdf': (btn) => mitLadezustand(btn, async () => {
+  'kasse-einreichung-pdf': (btn) => mitFehlerToast(btn, async () => {
     const a = auslagen?.find((x) => x.einreichungId === btn.dataset.id);
-    try {
-      const blob = await api(mitId('kasse/einreichung/pdf', btn.dataset.id), { blob: true });
-      const name = sichererDateiname(`Einreichung_${a?.mitglied.name || ''}_${(a?.eingereichtAm || '').slice(0, 10)}`);
-      await ladeDateiHerunter(blob, `${name}.pdf`);
-    } catch (err) {
-      zeigeToast(`⚠ ${err.message}`, 4000);
-    }
-  }),
+    const blob = await api(mitId('kasse/einreichung/pdf', btn.dataset.id), { blob: true });
+    const name = sichererDateiname(`Einreichung_${a?.mitglied.name || ''}_${(a?.eingereichtAm || '').slice(0, 10)}`);
+    await ladeDateiHerunter(blob, `${name}.pdf`);
+  }, 4000),
 
-  'kasse-beleg': (btn) => mitLadezustand(btn, async () => {
+  'kasse-beleg': (btn) => mitFehlerToast(btn, async () => {
     const a = auslagen?.find((x) => x.id === btn.dataset.id);
     if (!a) return;
-    try {
-      const blob = await api(mitId('kasse/beleg', a.id), { blob: true });
-      const name = sichererDateiname(`Beleg_${a.mitglied.name}_${a.datum}_${a.haendler}`);
-      await ladeDateiHerunter(blob, `${name}.${dateiEndung(blob.type)}`);
-    } catch (err) {
-      zeigeToast(`⚠ ${err.message}`, 4000);
-    }
-  })
+    const blob = await api(mitId('kasse/beleg', a.id), { blob: true });
+    const name = sichererDateiname(`Beleg_${a.mitglied.name}_${a.datum}_${a.haendler}`);
+    await ladeDateiHerunter(blob, `${name}.${dateiEndung(blob.type)}`);
+  }, 4000)
 });
 
 // Entwurf der Begründung beim Neu-Rendern behalten

@@ -43,8 +43,7 @@ function pruefeEinreichungsStatus(array $e, array $erlaubt): void
 function ladeEinreichungMitZugriff(string $id, array $benutzer): array
 {
     $e = abfrage('SELECT * FROM va_einreichungen WHERE id = ?', [$id])->fetch();
-    $kasse = in_array($benutzer['kassenrolle'], ['kassenwart', 'vorstand'], true);
-    if (!$e || ((int)$e['benutzer_id'] !== (int)$benutzer['id'] && !$kasse)) {
+    if (!$e || ((int)$e['benutzer_id'] !== (int)$benutzer['id'] && !hatKassenrolle($benutzer))) {
         throw new ApiFehler('Einreichung nicht gefunden. Bitte neu laden.', 404);
     }
     return $e;
@@ -56,9 +55,7 @@ function ladeEinreichungMitZugriff(string $id, array $benutzer): array
  */
 function schliesseEinreichung(array $e, string $zustand, array $autor, string $kommentar): void
 {
-    $pdo = db();
-    $pdo->beginTransaction();
-    try {
+    inTransaktion(function () use ($e, $zustand, $autor, $kommentar): void {
         abfrage("UPDATE va_einreichungen e SET zustand = ?, beendet_am = UTC_TIMESTAMP(3),
                 anzahl = (SELECT COUNT(*) FROM va_auslagen a WHERE a.einreichung_id = e.id),
                 summe = (SELECT COALESCE(SUM(a.betrag), 0) FROM va_auslagen a WHERE a.einreichung_id = e.id)
@@ -66,11 +63,7 @@ function schliesseEinreichung(array $e, string $zustand, array $autor, string $k
         fuegeKommentarEin($e, $autor, $kommentar, $zustand === 'abgelehnt' ? 'ablehnung' : 'zurueckgezogen');
         abfrage("UPDATE va_auslagen SET status = 'offen', einreichung_id = NULL, veranlasst_am = NULL, veranlasst_von = NULL,
             geaendert_am = UTC_TIMESTAMP(3) WHERE einreichung_id = ?", [$e['id']]);
-        $pdo->commit();
-    } catch (Throwable $ex) {
-        $pdo->rollBack();
-        throw $ex;
-    }
+    });
 }
 
 /**
@@ -117,22 +110,15 @@ route('POST', 'einreichungen', function (): void {
         if ($a['status'] !== 'offen') throw new ApiFehler("„{$a['haendler']}“ ist nicht mehr offen. Bitte neu laden.", 409);
     }
     $einreichungId = neueUuid();
-    $pdo = db();
-    $pdo->beginTransaction();
-    try {
+    inTransaktion(function () use ($einreichungId, $b, $ids): void {
         abfrage('INSERT INTO va_einreichungen (id, benutzer_id, erstellt_am) VALUES (?, ?, UTC_TIMESTAMP(3))',
             [$einreichungId, $b['id']]);
-        $platzhalter = implode(', ', array_fill(0, count($ids), '?'));
         abfrage("UPDATE va_auslagen SET status = 'eingereicht', einreichung_id = ?, geaendert_am = UTC_TIMESTAMP(3)
-            WHERE benutzer_id = ? AND id IN ({$platzhalter})", [$einreichungId, $b['id'], ...$ids]);
+            WHERE benutzer_id = ? AND id IN (" . platzhalter(count($ids)) . ')', [$einreichungId, $b['id'], ...$ids]);
         $summe = array_sum(array_column(ladeEigeneAuslagen($ids, (int)$b['id']), 'betrag'));
         protokolliereStatus(['id' => $einreichungId, 'benutzer_id' => $b['id']], $b, 'Eingereicht: '
             . count($ids) . (count($ids) === 1 ? ' Auslage, ' : ' Auslagen, ') . number_format($summe, 2, ',', '.') . ' €');
-        $pdo->commit();
-    } catch (Throwable $ex) {
-        $pdo->rollBack();
-        throw $ex;
-    }
+    });
     antworte([
         'einreichung' => ['id' => $einreichungId],
         'auslagen'    => array_map('auslageFuerClient', ladeEigeneAuslagen($ids, (int)$b['id'])),
@@ -159,17 +145,11 @@ route('DELETE', 'einreichungen', function (): void {
     if ($e['veranlasst_am'] !== null || !$frisch || $kommentiert) {
         throw new ApiFehler('Diese Einreichung lässt sich nur noch zurückziehen.', 409);
     }
-    $pdo = db();
-    $pdo->beginTransaction();
-    try {
+    inTransaktion(function () use ($e): void {
         abfrage("UPDATE va_auslagen SET status = 'offen', einreichung_id = NULL, geaendert_am = UTC_TIMESTAMP(3)
             WHERE einreichung_id = ?", [$e['id']]);
         abfrage('DELETE FROM va_einreichungen WHERE id = ?', [$e['id']]); // PDF per CASCADE
-        $pdo->commit();
-    } catch (Throwable $ex) {
-        $pdo->rollBack();
-        throw $ex;
-    }
+    });
     antworte();
 });
 
@@ -233,8 +213,7 @@ route('POST', 'einreichungen/uebernahme', function (): void {
     abfrage("INSERT INTO va_einreichungen (id, benutzer_id, art, erstellt_am) VALUES (?, ?, 'uebernahme', UTC_TIMESTAMP(3))",
         [$id, $b['id']]);
     $ids = array_column($auslagen, 'id');
-    $platzhalter = implode(', ', array_fill(0, count($ids), '?'));
-    abfrage("UPDATE va_auslagen SET einreichung_id = ? WHERE benutzer_id = ? AND id IN ({$platzhalter})",
+    abfrage('UPDATE va_auslagen SET einreichung_id = ? WHERE benutzer_id = ? AND id IN (' . platzhalter(count($ids)) . ')',
         [$id, $b['id'], ...$ids]);
     antworte(['einreichung' => ['id' => $id]]);
 });
@@ -262,23 +241,15 @@ route('PUT', 'einreichungen/pdf', function (): void {
     $vorhanden = abfrage('SELECT 1 FROM va_einreichung_pdfs WHERE einreichung_id = ?', [$e['id']])->fetchColumn();
     if ($vorhanden) throw new ApiFehler('Zu dieser Einreichung ist bereits ein PDF gespeichert.', 409);
 
-    $typ = strtolower(trim(explode(';', (string)($_SERVER['CONTENT_TYPE'] ?? ''))[0]));
     $daten = file_get_contents('php://input') ?: '';
-    if ($typ !== 'application/pdf' || !str_starts_with($daten, '%PDF')) throw new ApiFehler('Die Datei ist kein gültiges PDF.');
+    if (anfrageTyp() !== 'application/pdf' || !str_starts_with($daten, '%PDF')) throw new ApiFehler('Die Datei ist kein gültiges PDF.');
     if (strlen($daten) > maxPdfBytes()) throw new ApiFehler('Das PDF ist zu groß für den Server.', 413);
 
     $stmt = db()->prepare('INSERT INTO va_einreichung_pdfs (einreichung_id, groesse, daten, erstellt_am) VALUES (?, ?, ?, UTC_TIMESTAMP(3))');
     $stmt->bindValue(1, $e['id']);
     $stmt->bindValue(2, strlen($daten), PDO::PARAM_INT);
     $stmt->bindValue(3, $daten, PDO::PARAM_LOB);
-    try {
-        $stmt->execute();
-    } catch (PDOException $ex) {
-        if ((int)($ex->errorInfo[1] ?? 0) === 1153 || str_contains($ex->getMessage(), 'max_allowed_packet')) {
-            throw new ApiFehler('Das PDF ist größer, als die Datenbank erlaubt (max_allowed_packet).', 413);
-        }
-        throw $ex;
-    }
+    fuehreBlobAus($stmt, 'Das PDF ist größer, als die Datenbank erlaubt (max_allowed_packet).');
     antworte();
 });
 

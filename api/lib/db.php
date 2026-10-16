@@ -67,6 +67,60 @@ function abfrage(string $sql, array $werte = [], ?PDO $pdo = null): PDOStatement
     return $stmt;
 }
 
+/** "?, ?, ?" für IN (…) bzw. VALUES (…) */
+function platzhalter(int $anzahl): string
+{
+    return implode(', ', array_fill(0, $anzahl, '?'));
+}
+
+/** $arbeit in einer Transaktion ausführen; bei einem Fehler alles zurückrollen */
+function inTransaktion(callable $arbeit): void
+{
+    $pdo = db();
+    $pdo->beginTransaction();
+    try {
+        $arbeit();
+        $pdo->commit();
+    } catch (Throwable $ex) {
+        $pdo->rollBack();
+        throw $ex;
+    }
+}
+
+/** Verletzung eines UNIQUE-Schlüssels (MySQL-Fehler 1062)? */
+function istDoppelterEintrag(PDOException $ex): bool
+{
+    return (int)($ex->errorInfo[1] ?? 0) === 1062;
+}
+
+/** Anweisung mit großem Binärwert ausführen; scheitert sie an max_allowed_packet, kommt $zuGross als 413 */
+function fuehreBlobAus(PDOStatement $stmt, string $zuGross): void
+{
+    try {
+        $stmt->execute();
+    } catch (PDOException $ex) {
+        if ((int)($ex->errorInfo[1] ?? 0) === 1153 || str_contains($ex->getMessage(), 'max_allowed_packet')) {
+            throw new ApiFehler($zuGross, 413);
+        }
+        throw $ex;
+    }
+}
+
+/** DB-Zugangsdaten aus der Eingabe; leeres Passwort = bisheriges Passwort weiterverwenden */
+function dbEingabe(array $e): array
+{
+    $alt = ladeKonfig()['db'] ?? [];
+    $db = [
+        'host'     => textFeld($e, 'host', 255, true),
+        'port'     => (int)($e['port'] ?? 3306),
+        'name'     => textFeld($e, 'name', 64, true),
+        'benutzer' => textFeld($e, 'benutzer', 100, true),
+        'passwort' => (string)($e['passwort'] ?? ''),
+    ];
+    if ($db['passwort'] === '') $db['passwort'] = (string)($alt['passwort'] ?? '');
+    return $db;
+}
+
 /** Tabellen anlegen bzw. auf den aktuellen Stand bringen */
 function migriere(PDO $pdo): void
 {
@@ -331,7 +385,7 @@ function kopiereDaten(PDO $quelle, PDO $ziel): void
                     $z = $lesen->fetch();
                     $spalten = array_keys($z);
                     $schreiben ??= $ziel->prepare(sprintf('INSERT INTO %s (%s) VALUES (%s)', $tabelle,
-                        implode(', ', $spalten), implode(', ', array_fill(0, count($spalten), '?'))));
+                        implode(', ', $spalten), platzhalter(count($spalten))));
                     foreach ($spalten as $i => $spalte) {
                         $schreiben->bindValue($i + 1, $z[$spalte], $spalte === 'daten' ? PDO::PARAM_LOB : PDO::PARAM_STR);
                     }
@@ -342,8 +396,7 @@ function kopiereDaten(PDO $quelle, PDO $ziel): void
             $zeilen = $quelle->query("SELECT * FROM {$tabelle}")->fetchAll();
             if (!$zeilen) continue;
             $spalten = array_keys($zeilen[0]);
-            $sql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tabelle,
-                implode(', ', $spalten), implode(', ', array_fill(0, count($spalten), '?')));
+            $sql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tabelle, implode(', ', $spalten), platzhalter(count($spalten)));
             $stmt = $ziel->prepare($sql);
             foreach ($zeilen as $z) $stmt->execute(array_values($z));
         }

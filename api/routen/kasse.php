@@ -31,17 +31,12 @@ route('GET', 'kasse/auslagen', function (): void {
     // Jede eingereichte Auslage gehört zu einer Einreichung – Reste (z. B. abgebrochener Import) bündeln
     $verwaist = abfrage("SELECT 1 FROM va_auslagen WHERE status <> 'offen' AND einreichung_id IS NULL LIMIT 1")->fetchColumn();
     if ($verwaist) gruppiereVerwaisteAuslagen(db());
-    $zeilen = abfrage("SELECT a.*,
-            COALESCE(NULLIF(TRIM(CONCAT(v.vorname, ' ', v.nachname)), ''), v.benutzername) AS veranlasst_von_name,
+    $zeilen = abfrage('SELECT ' . AUSLAGEN_SPALTEN . ",
             COALESCE(NULLIF(TRIM(CONCAT(m.vorname, ' ', m.nachname)), ''), m.benutzername) AS mitglied_name,
-            m.iban AS mitglied_iban,
-            e.erstellt_am AS einreichung_am, e.art AS einreichung_art, e.erstattet_am AS einreichung_erstattet_am,
-            GREATEST(0, " . ABSCHLUSS_FRIST_S . " - TIMESTAMPDIFF(SECOND, e.erstattet_am, UTC_TIMESTAMP(3))) AS abschluss_in_s,
-            EXISTS(SELECT 1 FROM va_einreichung_pdfs p WHERE p.einreichung_id = a.einreichung_id) AS einreichung_hat_pdf
+            m.iban AS mitglied_iban
         FROM va_auslagen a
         JOIN va_benutzer m ON m.id = a.benutzer_id
-        LEFT JOIN va_benutzer v ON v.id = a.veranlasst_von
-        LEFT JOIN va_einreichungen e ON e.id = a.einreichung_id
+        " . AUSLAGEN_JOINS . "
         WHERE a.status <> 'offen'
         ORDER BY COALESCE(e.erstellt_am, a.geaendert_am) DESC, a.datum, a.erstellt_am")->fetchAll();
     $mitIban = $ich['kassenrolle'] === 'kassenwart';

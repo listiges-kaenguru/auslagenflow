@@ -71,7 +71,7 @@ route('POST', 'admin/benutzer', function (): void {
             textFeld($e, 'vorname'), textFeld($e, 'nachname'), base64urlEncode(random_bytes(32)),
         ]);
     } catch (PDOException $ex) {
-        if ((int)($ex->errorInfo[1] ?? 0) === 1062) throw new ApiFehler('Diesen Benutzernamen gibt es bereits.');
+        if (istDoppelterEintrag($ex)) throw new ApiFehler('Diesen Benutzernamen gibt es bereits.');
         throw $ex;
     }
     antworte(['startpasswort' => $startpasswort]);
@@ -144,21 +144,6 @@ route('POST', 'admin/benutzer/loeschen', function (): void {
 // Datenbank-Verbindung
 // ---------------------------------------------
 
-/** Eingaben lesen; leeres Passwort = bisheriges Passwort weiterverwenden */
-function dbEingabe(array $e): array
-{
-    $alt = ladeKonfig()['db'] ?? [];
-    $db = [
-        'host'     => textFeld($e, 'host', 255, true),
-        'port'     => (int)($e['port'] ?? 3306),
-        'name'     => textFeld($e, 'name', 64, true),
-        'benutzer' => textFeld($e, 'benutzer', 100, true),
-        'passwort' => (string)($e['passwort'] ?? ''),
-    ];
-    if ($db['passwort'] === '') $db['passwort'] = (string)($alt['passwort'] ?? '');
-    return $db;
-}
-
 function istGleicheDb(array $a, array $b): bool
 {
     return strtolower($a['host']) === strtolower($b['host']) && (int)$a['port'] === (int)$b['port'] && $a['name'] === $b['name'];
@@ -204,7 +189,7 @@ route('POST', 'admin/db', function (): void {
             $zeile = abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$admin['id']])->fetch();
             $spalten = array_keys($zeile);
             $ziel->prepare(sprintf('INSERT INTO va_benutzer (%s) VALUES (%s)', implode(', ', $spalten),
-                implode(', ', array_fill(0, count($spalten), '?'))))->execute(array_values($zeile));
+                platzhalter(count($spalten))))->execute(array_values($zeile));
             $pk = $ziel->prepare('INSERT INTO va_passkeys (benutzer_id, credential_id, public_key, sign_count, name, erstellt_am, zuletzt_benutzt)
                 VALUES (?, ?, ?, ?, ?, ?, ?)');
             foreach (abfrage('SELECT * FROM va_passkeys WHERE benutzer_id = ?', [$admin['id']])->fetchAll() as $p) {
