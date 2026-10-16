@@ -50,7 +50,7 @@ function mitAbschluss(a) {
 }
 
 /** Nur die Eckdaten der Einreichungen neu holen (z. B. nach neuen Kommentaren) */
-export async function aktualisiereEinreichungen() {
+async function aktualisiereEinreichungen() {
   einreichungen = (await apiGet('einreichungen')).einreichungen;
 }
 

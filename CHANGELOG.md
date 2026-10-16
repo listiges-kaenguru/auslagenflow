@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.3.0** |
+| App-Version (`sw.js` → `VERSION`) | **v3.3.1** |
 | Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
 | Tests | keine automatisierten Tests |
 
@@ -61,6 +61,21 @@ Der Funktionsumfang ist vollständig umgesetzt (siehe unten). Es gibt keine beka
 ## Versionen
 
 Neueste zuerst.
+
+### v3.3.1 – Code aufgeräumt
+
+Reines Refactoring ohne sichtbare Änderung (gleiche Oberfläche, gleiches Verhalten, gleiche API):
+
+- **Entfernt:** ungenutzte Funktion `neueId()`, Konstante `STATUS_WERTE`, CSS für die frühere
+  Status-Knopfleiste (`.status-leiste`, `.status-btn*`, `--offen-aktiv`) und `.beleg-knoepfe--einzeln`
+- **Frontend:** gemeinsamer Helfer `mitFehlerToast()` (Ladezustand + Fehler-Toast) statt eigener
+  Varianten in Profil, Anmeldung, Übersicht und Kasse; `MIN_PASSWORT` nur noch in `sitzung.js`;
+  Beleg-Anzeige im Detail-Fenster in einer Funktion; Kommentare nutzen `formatiereBetrag()`/`plural()`;
+  Kasse gruppiert pro Darstellung nur noch einmal; Export ohne doppelte ZIP-Optionen/Beleg-Namen
+- **Backend:** Helfer `inTransaktion()`, `platzhalter()`, `istDoppelterEintrag()`, `fuehreBlobAus()`
+  (`lib/db.php`), `anfrageTyp()` (`lib/http.php`), `hatKassenrolle()`/`ladeBenutzerFuerClient()`
+  (`lib/sitzung.php`); `dbEingabe()` nach `lib/db.php` und auch für die Ersteinrichtung genutzt;
+  die Kassen-Abfrage verwendet `AUSLAGEN_SPALTEN`/`AUSLAGEN_JOINS` statt einer Kopie von `AUSLAGEN_SELECT`
 
 ### v3.3.0 – Neuer Name: AuslagenFlow
 

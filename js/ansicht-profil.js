@@ -4,16 +4,16 @@
 // Für Admins zusätzlich „Administration“: Benutzerverwaltung (inkl. Kassenrolle) und Datenbank-Verbindung
 // =============================================
 import {
-  escapeHtml, formatiereDatum, formatiereGroesse, plural, zeigeToast, mitLadezustand, registriereAktionen,
-  ladeSkript, ladeDateiHerunter, lizenzHinweisHtml
+  escapeHtml, formatiereDatum, formatiereGroesse, plural, zeigeToast, mitLadezustand, mitFehlerToast,
+  registriereAktionen, ladeSkript, ladeDateiHerunter, lizenzHinweisHtml
 } from './hilfen.js';
 import { apiGet, apiPost, apiPut, apiDelete, mitId } from './api.js';
-import { aktuellerBenutzer, setzeBenutzer, istAdmin, anzeigeName, passkeysMoeglich, meldeAb, ladeStatus } from './sitzung.js';
+import {
+  aktuellerBenutzer, setzeBenutzer, istAdmin, anzeigeName, passkeysMoeglich, meldeAb, ladeStatus, MIN_PASSWORT
+} from './sitzung.js';
 import { stammdatenFormularHtml } from './stammdaten.js';
 import { erstellePasskey, geraeteName } from './webauthn.js';
 import { versionsInfo } from './pwa.js';
-
-const MIN_PASSWORT = 10;
 
 /** Fachliche Rolle zusätzlich zu Benutzer/Admin (Einblick in eingereichte Auslagen aller Mitglieder) */
 const KASSENROLLEN = { keine: 'Keine', kassenwart: 'Kassenwart', vorstand: 'Vorstand' };
@@ -432,12 +432,6 @@ export function vergissProfilZustand() {
 // ---------------------------------------------
 // Aktionen
 // ---------------------------------------------
-async function mitFehler(btn, arbeit) {
-  return mitLadezustand(btn, async () => {
-    try { await arbeit(); } catch (err) { zeigeToast(`⚠ ${err.message}`, 5000); }
-  });
-}
-
 async function kopiere(text, meldung) {
   try {
     await navigator.clipboard.writeText(text);
@@ -458,7 +452,7 @@ registriereAktionen({
     if (!f.alt.value) { f.alt.focus(); zeigeToast('⚠ Bitte aktuelles Passwort eingeben'); return; }
     if (f.neu.value.length < MIN_PASSWORT) { f.neu.focus(); zeigeToast(`⚠ Mindestens ${MIN_PASSWORT} Zeichen`); return; }
     if (f.neu.value !== f.neu2.value) { f.neu2.focus(); zeigeToast('⚠ Passwörter stimmen nicht überein'); return; }
-    return mitFehler(form.querySelector('[type="submit"]'), async () => {
+    return mitFehlerToast(form.querySelector('[type="submit"]'), async () => {
       const r = await apiPost('profil/passwort', { alt: f.alt.value, neu: f.neu.value });
       form.reset();
       setzeBenutzer(r.benutzer);
@@ -467,7 +461,7 @@ registriereAktionen({
   },
 
   // --- TOTP ---
-  'totp-starten': (btn) => mitFehler(btn, async () => {
+  'totp-starten': (btn) => mitFehlerToast(btn, async () => {
     const [r, qrcode] = await Promise.all([apiPost('profil/totp/start'), ladeSkript('vendor/qrcode.js', 'qrcode')]);
     const qr = qrcode(0, 'M');
     qr.addData(r.uri);
@@ -481,7 +475,7 @@ registriereAktionen({
   'formular:totp-bestaetigen': (form) => {
     const code = form.elements.code.value.replace(/\s/g, '');
     if (!/^\d{6}$/.test(code)) { zeigeToast('⚠ Bitte den 6-stelligen Code eingeben'); return; }
-    return mitFehler(form.querySelector('[type="submit"]'), async () => {
+    return mitFehlerToast(form.querySelector('[type="submit"]'), async () => {
       const r = await apiPost('profil/totp/bestaetigen', { code });
       totpEinrichtung = null;
       neueCodes = r.codes;
@@ -509,7 +503,7 @@ registriereAktionen({
     const passwort = form.elements.passwort.value;
     if (!passwort) { form.elements.passwort.focus(); return; }
     const { zweck, id } = passwortAbfrage || {};
-    return mitFehler(form.querySelector('[type="submit"]'), async () => {
+    return mitFehlerToast(form.querySelector('[type="submit"]'), async () => {
       if (zweck === 'totp-aus') {
         const r = await apiPost('profil/totp/deaktivieren', { passwort });
         passwortAbfrage = null;
@@ -531,7 +525,7 @@ registriereAktionen({
   },
 
   // --- Passkeys ---
-  'formular:passkey-neu': (form) => mitFehler(form.querySelector('[type="submit"]'), async () => {
+  'formular:passkey-neu': (form) => mitFehlerToast(form.querySelector('[type="submit"]'), async () => {
     const { optionen } = await apiPost('profil/passkey-optionen');
     const credential = await erstellePasskey(optionen);
     const r = await apiPost('profil/passkey', { credential, name: form.elements.name.value.trim() });
@@ -541,7 +535,7 @@ registriereAktionen({
 
   'passkey-loeschen': (btn) => {
     if (!window.confirm(`Passkey „${btn.dataset.name}“ entfernen?\n\nDas Gerät kann sich danach nicht mehr per Passkey anmelden. Den Eintrag im Passwort-Manager des Geräts bitte zusätzlich löschen.`)) return;
-    return mitFehler(btn, async () => {
+    return mitFehlerToast(btn, async () => {
       const r = await apiDelete(mitId('profil/passkey', btn.dataset.id));
       setzeBenutzer(r.benutzer);
       zeigeToast('Passkey entfernt');
@@ -613,7 +607,7 @@ registriereAktionen({
   },
 
   // --- Admin: Datenbank ---
-  'db-testen': (btn) => mitFehler(btn, async () => {
+  'db-testen': (btn) => mitFehlerToast(btn, async () => {
     const eingabe = dbFormular(btn.form);
     const r = await apiPost('admin/db/test', eingabe);
     dbTest = { eingabe: { ...eingabe, passwort: '' }, uebersicht: r.uebersicht, gleicheDb: r.gleicheDb, passwort: eingabe.passwort };
@@ -626,7 +620,7 @@ registriereAktionen({
     const adminPasswort = form.elements.adminPasswort?.value || '';
     if (!adminPasswort) { form.elements.adminPasswort.focus(); zeigeToast('⚠ Bitte dein Admin-Passwort eingeben'); return; }
     const uebernehmen = !!document.querySelector('input[name="uebernehmen"][form="formDb"]')?.checked;
-    return mitFehler(form.querySelector('[type="submit"]'), async () => {
+    return mitFehlerToast(form.querySelector('[type="submit"]'), async () => {
       const r = await apiPost('admin/db', { ...eingabe, passwort: eingabe.passwort || dbTest.passwort, uebernehmen, adminPasswort });
       dbTest = null;
       if (r.neuAnmelden) {

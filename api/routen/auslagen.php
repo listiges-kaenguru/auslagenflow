@@ -10,20 +10,22 @@
 // =============================================
 declare(strict_types=1);
 
-const STATUS_WERTE = ['offen', 'eingereicht', 'veranlasst', 'erstattet'];
 /** So lange nach „erstattet“ kann das Mitglied noch zurücknehmen; danach ist die Einreichung abgeschlossen */
 const ABSCHLUSS_FRIST_S = 300;
 const BELEG_TYPEN  = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
 
-/** Auslagen samt Einreichung und Namen dessen, der die Erstattung veranlasst hat (Alias a) */
-const AUSLAGEN_SELECT = "SELECT a.*,
+/**
+ * Auslagen samt Einreichung und Namen dessen, der die Erstattung veranlasst hat (Alias a).
+ * Spalten und Joins einzeln, weil die Kasse (kasse.php) dieselbe Abfrage um das Mitglied erweitert.
+ */
+const AUSLAGEN_SPALTEN = "a.*,
         COALESCE(NULLIF(TRIM(CONCAT(v.vorname, ' ', v.nachname)), ''), v.benutzername) AS veranlasst_von_name,
         e.erstellt_am AS einreichung_am, e.art AS einreichung_art, e.erstattet_am AS einreichung_erstattet_am,
         GREATEST(0, " . ABSCHLUSS_FRIST_S . " - TIMESTAMPDIFF(SECOND, e.erstattet_am, UTC_TIMESTAMP(3))) AS abschluss_in_s,
-        EXISTS(SELECT 1 FROM va_einreichung_pdfs p WHERE p.einreichung_id = a.einreichung_id) AS einreichung_hat_pdf
-    FROM va_auslagen a
-    LEFT JOIN va_benutzer v ON v.id = a.veranlasst_von
+        EXISTS(SELECT 1 FROM va_einreichung_pdfs p WHERE p.einreichung_id = a.einreichung_id) AS einreichung_hat_pdf";
+const AUSLAGEN_JOINS = "LEFT JOIN va_benutzer v ON v.id = a.veranlasst_von
     LEFT JOIN va_einreichungen e ON e.id = a.einreichung_id";
+const AUSLAGEN_SELECT = 'SELECT ' . AUSLAGEN_SPALTEN . ' FROM va_auslagen a ' . AUSLAGEN_JOINS;
 
 function isoZeit(?string $dt): ?string
 {
@@ -87,8 +89,7 @@ function idListe(mixed $ids): array
 /** Eigene Auslagen zu den IDs – fehlt eine, wurde sie inzwischen gelöscht o. Ä. */
 function ladeEigeneAuslagen(array $ids, int $benutzerId): array
 {
-    $platzhalter = implode(', ', array_fill(0, count($ids), '?'));
-    $zeilen = abfrage(AUSLAGEN_SELECT . " WHERE a.benutzer_id = ? AND a.id IN ({$platzhalter})",
+    $zeilen = abfrage(AUSLAGEN_SELECT . ' WHERE a.benutzer_id = ? AND a.id IN (' . platzhalter(count($ids)) . ')',
         [$benutzerId, ...$ids])->fetchAll();
     if (count($zeilen) !== count($ids)) throw new ApiFehler('Einige Auslagen wurden nicht gefunden. Bitte neu laden.', 409);
     return $zeilen;
@@ -163,7 +164,7 @@ route('POST', 'auslagen', function (): void {
             $id, $b['id'], $werte['datum'], $werte['haendler'], $werte['betrag'], $werte['notiz'], $status, $erstellt,
         ]);
     } catch (PDOException $ex) {
-        if ((int)($ex->errorInfo[1] ?? 0) === 1062) throw new ApiFehler('Diese Auslage ist bereits vorhanden.', 409);
+        if (istDoppelterEintrag($ex)) throw new ApiFehler('Diese Auslage ist bereits vorhanden.', 409);
         throw $ex;
     }
     antworte(['auslage' => auslageFuerClient(ladeEigeneAuslage($id, (int)$b['id']))]);
@@ -222,7 +223,7 @@ route('PUT', 'beleg', function (): void {
     $id = (string)($_GET['id'] ?? '');
     pruefeEinzelnAenderbar(ladeEigeneAuslage($id, (int)$b['id']), 'der Beleg kann nicht ersetzt werden.');
 
-    $typ = strtolower(trim(explode(';', (string)($_SERVER['CONTENT_TYPE'] ?? ''))[0]));
+    $typ = anfrageTyp();
     if (!in_array($typ, BELEG_TYPEN, true)) throw new ApiFehler('Nur Fotos (JPEG, PNG, WebP, GIF) oder PDFs sind erlaubt.');
     $daten = file_get_contents('php://input') ?: '';
     if ($daten === '') throw new ApiFehler('Der Beleg ist leer oder zu groß für den Server.', 413);
@@ -234,14 +235,7 @@ route('PUT', 'beleg', function (): void {
     $stmt->bindValue(2, $typ);
     $stmt->bindValue(3, strlen($daten), PDO::PARAM_INT);
     $stmt->bindValue(4, $daten, PDO::PARAM_LOB);
-    try {
-        $stmt->execute();
-    } catch (PDOException $ex) {
-        if ((int)($ex->errorInfo[1] ?? 0) === 1153 || str_contains($ex->getMessage(), 'max_allowed_packet')) {
-            throw new ApiFehler('Der Beleg ist größer, als die Datenbank erlaubt (max_allowed_packet).', 413);
-        }
-        throw $ex;
-    }
+    fuehreBlobAus($stmt, 'Der Beleg ist größer, als die Datenbank erlaubt (max_allowed_packet).');
     abfrage('UPDATE va_auslagen SET hat_beleg = 1, geaendert_am = UTC_TIMESTAMP(3) WHERE id = ?', [$id]);
     antworte(['auslage' => auslageFuerClient(ladeEigeneAuslage($id, (int)$b['id']))]);
 });

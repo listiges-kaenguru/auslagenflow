@@ -56,6 +56,12 @@ function textFeld(array $daten, string $name, int $maxLaenge = 100, bool $pflich
     return $wert;
 }
 
+/** MIME-Typ des Anfrage-Bodys ohne Parameter, z. B. "application/pdf" */
+function anfrageTyp(): string
+{
+    return strtolower(trim(explode(';', (string)($_SERVER['CONTENT_TYPE'] ?? ''))[0]));
+}
+
 function istHttps(): bool
 {
     return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')

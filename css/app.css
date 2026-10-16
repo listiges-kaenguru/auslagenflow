@@ -56,7 +56,6 @@
 
   --grau-badge-hg:   #e9e7e2;
   --grau-badge-text: #374151;
-  --offen-aktiv:     #374151;
 
   --deaktiviert:     #9ca1a9;
   --griff:           #d4d2cc;
@@ -117,7 +116,6 @@
 
   --grau-badge-hg:   #2f3137;
   --grau-badge-text: #d1d5db;
-  --offen-aktiv:     #4b5563;
 
   --deaktiviert:     #4b5058;
   --griff:           #3b3e45;
@@ -418,7 +416,6 @@ textarea.formular-feld { resize: vertical; min-height: 76px; line-height: 1.45; 
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-.beleg-knoepfe--einzeln { grid-template-columns: 1fr; }
 
 /* =============================================
    STATUS-BADGES
@@ -818,26 +815,6 @@ textarea.formular-feld { resize: vertical; min-height: 76px; line-height: 1.45; 
   margin-bottom: 10px;
 }
 
-.status-leiste {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-.status-btn {
-  padding: 9px 16px;
-  min-height: 44px;
-  border-radius: 99px;
-  border: 1.5px solid var(--rand-feld);
-  background: var(--flaeche);
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.status-btn--offen[aria-pressed="true"]       { border-color: var(--offen-aktiv); background: var(--offen-aktiv); color: #ffffff; }
-.status-btn--eingereicht[aria-pressed="true"] { border-color: var(--amber);       background: var(--amber);       color: #ffffff; }
-.status-btn--erstattet[aria-pressed="true"]   { border-color: var(--akzent);      background: var(--akzent);      color: #ffffff; }
-
 .beleg-anzeige {
   border: 1px solid var(--rand);
   border-radius: 12px;
@@ -1022,8 +999,8 @@ textarea.formular-feld { resize: vertical; min-height: 76px; line-height: 1.45; 
 
 /* Windows-Kontrastmodus: Ränder und Fokus sichtbar halten */
 @media (forced-colors: active) {
-  .btn, .filter-chip, .status-btn, .kopf-btn, .auslagen-karte { border: 1px solid ButtonText; }
-  .filter-chip[aria-pressed="true"], .status-btn[aria-pressed="true"] { outline: 2px solid Highlight; }
+  .btn, .filter-chip, .kopf-btn, .auslagen-karte { border: 1px solid ButtonText; }
+  .filter-chip[aria-pressed="true"] { outline: 2px solid Highlight; }
 }
 
 /* =============================================

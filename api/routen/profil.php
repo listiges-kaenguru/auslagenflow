@@ -51,7 +51,7 @@ route('PUT', 'profil/stammdaten', function (): void {
     abfrage('UPDATE va_benutzer SET vorname = ?, nachname = ?, iban = ?, ort = ? WHERE id = ?', [
         textFeld($e, 'vorname'), textFeld($e, 'nachname'), $iban, textFeld($e, 'ort'), $b['id'],
     ]);
-    antworte(['benutzer' => benutzerFuerClient(abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$b['id']])->fetch())]);
+    antworte(['benutzer' => ladeBenutzerFuerClient((int)$b['id'])]);
 });
 
 // Auch bei ausstehendem Pflichtwechsel erlaubt → nur Login prüfen
@@ -67,7 +67,7 @@ route('POST', 'profil/passwort', function (): void {
     abfrage('UPDATE va_benutzer SET passwort_hash = ?, muss_passwort_aendern = 0 WHERE id = ?',
         [password_hash($neu, PASSWORD_DEFAULT), $b['id']]);
     erneuereSitzungsGeneration((int)$b['id']); // andere Geräte werden abgemeldet
-    antworte(['benutzer' => benutzerFuerClient(abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$b['id']])->fetch())]);
+    antworte(['benutzer' => ladeBenutzerFuerClient((int)$b['id'])]);
 });
 
 // ---------------------------------------------
@@ -97,7 +97,7 @@ route('POST', 'profil/totp/bestaetigen', function (): void {
     $codes = speichereNeueCodes((int)$b['id']);
     antworte([
         'codes'    => $codes,
-        'benutzer' => benutzerFuerClient(abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$b['id']])->fetch()),
+        'benutzer' => ladeBenutzerFuerClient((int)$b['id']),
     ]);
 });
 
@@ -106,7 +106,7 @@ route('POST', 'profil/totp/deaktivieren', function (): void {
     pruefeAktuellesPasswort($b, eingabe()['passwort'] ?? null);
     abfrage('UPDATE va_benutzer SET totp_geheimnis = NULL, totp_aktiv = 0, totp_letzter_schritt = 0 WHERE id = ?', [$b['id']]);
     abfrage('DELETE FROM va_wiederherstellung WHERE benutzer_id = ?', [$b['id']]);
-    antworte(['benutzer' => benutzerFuerClient(abfrage('SELECT * FROM va_benutzer WHERE id = ?', [$b['id']])->fetch())]);
+    antworte(['benutzer' => ladeBenutzerFuerClient((int)$b['id'])]);
 });
 
 route('POST', 'profil/totp/neue-codes', function (): void {
@@ -134,7 +134,7 @@ route('POST', 'profil/passkey', function (): void {
         abfrage('INSERT INTO va_passkeys (benutzer_id, credential_id, public_key, sign_count, name) VALUES (?, ?, ?, ?, ?)',
             [$b['id'], $daten['credential_id'], $daten['public_key'], $daten['sign_count'], $name]);
     } catch (PDOException $ex) {
-        if ((int)($ex->errorInfo[1] ?? 0) === 1062) throw new ApiFehler('Dieser Passkey ist bereits registriert.');
+        if (istDoppelterEintrag($ex)) throw new ApiFehler('Dieser Passkey ist bereits registriert.');
         throw $ex;
     }
     antworte(['benutzer' => benutzerFuerClient($b)]);

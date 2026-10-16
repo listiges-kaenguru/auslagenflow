@@ -37,13 +37,7 @@ route('POST', 'einrichtung', function (): void {
     if (istEingerichtet()) throw new ApiFehler('Die Anwendung ist bereits eingerichtet.', 403);
     $e = eingabe();
 
-    $db = [
-        'host'     => textFeld($e['db'] ?? [], 'host', 255, true),
-        'port'     => (int)($e['db']['port'] ?? 3306),
-        'name'     => textFeld($e['db'] ?? [], 'name', 64, true),
-        'benutzer' => textFeld($e['db'] ?? [], 'benutzer', 100, true),
-        'passwort' => (string)($e['db']['passwort'] ?? ''),
-    ];
+    $db = dbEingabe($e['db'] ?? []); // noch keine Konfiguration → kein bisheriges Passwort
     $benutzername = textFeld($e['admin'] ?? [], 'benutzername', 50, true);
     $passwort = (string)($e['admin']['passwort'] ?? '');
     pruefeBenutzername($benutzername);

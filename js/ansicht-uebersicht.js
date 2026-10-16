@@ -9,8 +9,8 @@
 // =============================================
 import {
   STATUS_LISTE, statusInfo, escapeHtml, formatiereDatum, formatiereBetrag, formatiereZeitpunkt, plural,
-  summe, gruppiereNachEinreichung, einreichungsText, istAbgeschlossen, zeigeToast, mitLadezustand, registriereAktionen,
-  meldeDatenAenderung, ladeDateiHerunter, sichererDateiname
+  summe, gruppiereNachEinreichung, einreichungsText, istAbgeschlossen, zeigeToast, mitLadezustand, mitFehlerToast,
+  registriereAktionen, meldeDatenAenderung, ladeDateiHerunter, sichererDateiname
 } from './hilfen.js';
 import {
   ladeAuslagenSortiert, ladeEinreichungen, setzeEinreichungStatus, zieheEinreichungZurueck, aktualisiereVomServer,
@@ -34,8 +34,9 @@ export function rendereUebersicht(container) {
   const gruppen = alleGruppen.filter((g) => !istAbgeschlossen(g));
   const erledigt = alleGruppen.filter(istAbgeschlossen);
   planeAbschluss(gruppen);
-  const eckdaten = new Map(ladeEinreichungen().map((e) => [e.id, e]));
-  const abgebrochen = aktuellerFilter === 'alle' ? ladeEinreichungen().filter((e) => e.zustand !== 'aktiv') : [];
+  const einreichungen = ladeEinreichungen();
+  const eckdaten = new Map(einreichungen.map((e) => [e.id, e]));
+  const abgebrochen = aktuellerFilter === 'alle' ? einreichungen.filter((e) => e.zustand !== 'aktiv') : [];
   // Einzelne nicht erstattete Einreichung aufklappen – sonst nur bei ungelesenen Einträgen
   const standardOffen = (g) => (eckdaten.get(g.id)?.ungelesen > 0)
     || (gruppen.length === 1 && g.status !== 'erstattet');
@@ -229,15 +230,11 @@ registriereAktionen({
     });
   },
 
-  'einreichung-pdf': (btn) => mitLadezustand(btn, async () => {
+  'einreichung-pdf': (btn) => mitFehlerToast(btn, async () => {
     const e = ladeEinreichungen().find((x) => x.id === btn.dataset.id);
-    try {
-      const blob = await holeEinreichungsPdf(btn.dataset.id);
-      const datum = (e?.erstelltAm || '').slice(0, 10);
-      await ladeDateiHerunter(blob, sichererDateiname(`AuslagenFlow_Einreichung_${datum}`) + '.pdf');
-    } catch (err) {
-      zeigeToast(`⚠ ${err.message}`, 5000);
-    }
+    const blob = await holeEinreichungsPdf(btn.dataset.id);
+    const datum = (e?.erstelltAm || '').slice(0, 10);
+    await ladeDateiHerunter(blob, sichererDateiname(`AuslagenFlow_Einreichung_${datum}`) + '.pdf');
   }),
 
   'einreichung-status': (btn) => mitLadezustand(btn, async () => {

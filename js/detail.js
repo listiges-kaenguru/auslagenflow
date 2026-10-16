@@ -34,7 +34,7 @@ function gibBelegFrei() {
 // ---------------------------------------------
 // Öffnen / Schließen
 // ---------------------------------------------
-export async function oeffneDetail(id) {
+async function oeffneDetail(id) {
   if (!findeAuslage(id)) return;
   const warOffen = istOffen();
   aktuelleId = id;
@@ -217,17 +217,22 @@ function anzeigeHtml(auslage, beleg) {
   `;
 }
 
+const belegFehltHtml = (titel) => `
+  <div class="beleg-fehlt">
+    <div class="beleg-fehlt__icon" aria-hidden="true">⚠</div>
+    <div class="beleg-fehlt__titel">${titel}</div>
+  </div>`;
+
+/**
+ * Beleg ansehen und herunterladen. Nur offene Auslagen (ohne Einreichung) bieten zusätzlich
+ * Entfernen und Ersetzen bzw. Nachreichen.
+ */
 function belegHtml(auslage, beleg) {
-  if (auslage.einreichungId) return belegNurAnsehenHtml(auslage, beleg);
+  const aenderbar = !auslage.einreichungId;
   if (!beleg) {
-    return `
-      <div class="beleg-fehlt">
-        <div class="beleg-fehlt__icon" aria-hidden="true">⚠</div>
-        <div class="beleg-fehlt__titel">
-          ${auslage.hatFoto ? 'Beleg nicht mehr auffindbar' : 'Kein Beleg hinterlegt'}
-        </div>
-      </div>
-      ${belegKnoepfeHtml('detail')}`;
+    return aenderbar
+      ? belegFehltHtml(auslage.hatFoto ? 'Beleg nicht mehr auffindbar' : 'Kein Beleg hinterlegt') + belegKnoepfeHtml('detail')
+      : belegFehltHtml('Kein Beleg hinterlegt');
   }
 
   const anzeige = istPdf(beleg)
@@ -244,31 +249,9 @@ function belegHtml(auslage, beleg) {
     ${anzeige}
     <div class="knopf-reihe beleg-aktionen">
       <button type="button" class="btn btn-sekundaer btn-klein" data-aktion="detail-beleg-download">⬇ Herunterladen</button>
-      <button type="button" class="btn btn-gefahr btn-klein" data-aktion="detail-beleg-entfernen">Entfernen</button>
+      ${aenderbar ? '<button type="button" class="btn btn-gefahr btn-klein" data-aktion="detail-beleg-entfernen">Entfernen</button>' : ''}
     </div>
-    ${belegKnoepfeHtml('detail', { ersetzen: true })}`;
-}
-
-/** Eingereichte Auslage: Beleg nur ansehen und herunterladen */
-function belegNurAnsehenHtml(auslage, beleg) {
-  if (!beleg) {
-    return `
-      <div class="beleg-fehlt">
-        <div class="beleg-fehlt__icon" aria-hidden="true">⚠</div>
-        <div class="beleg-fehlt__titel">Kein Beleg hinterlegt</div>
-      </div>`;
-  }
-  return `
-    ${istPdf(beleg)
-      ? `<div class="beleg-anzeige beleg-anzeige--pdf">
-          <span class="pdf-icon" aria-hidden="true">📄</span>
-          <span>PDF-Beleg · ${formatiereGroesse(beleg.size)}</span>
-        </div>
-        <a class="btn btn-sekundaer btn-klein beleg-oeffnen" href="${belegUrl}" target="_blank" rel="noopener">PDF öffnen</a>`
-      : `<div class="beleg-anzeige"><img src="${belegUrl}" alt="Beleg von ${escapeHtml(auslage.haendler)}"></div>`}
-    <div class="knopf-reihe beleg-aktionen">
-      <button type="button" class="btn btn-sekundaer btn-klein" data-aktion="detail-beleg-download">⬇ Herunterladen</button>
-    </div>`;
+    ${aenderbar ? belegKnoepfeHtml('detail', { ersetzen: true }) : ''}`;
 }
 
 function bearbeitenHtml(auslage) {

@@ -2,12 +2,10 @@
 // VOR DER ANMELDUNG: Einrichtung, Anmeldung, zweiter Faktor, Pflicht-Passwortwechsel
 // Nach Erfolg wird „angemeldet“ ausgelöst; main.js lädt dann die Daten und zeigt die App.
 // =============================================
-import { escapeHtml, zeigeToast, mitLadezustand, registriereAktionen, lizenzHinweisHtml } from './hilfen.js';
+import { escapeHtml, zeigeToast, mitFehlerToast, registriereAktionen, lizenzHinweisHtml } from './hilfen.js';
 import { apiPost } from './api.js';
-import { ladeStatus, serverStatus, setzeBenutzer, meldeAb, passkeysMoeglich } from './sitzung.js';
+import { ladeStatus, serverStatus, setzeBenutzer, meldeAb, passkeysMoeglich, MIN_PASSWORT } from './sitzung.js';
 import { passkeyAssertion } from './webauthn.js';
-
-const MIN_PASSWORT = 10;
 
 /** Welche Seite gerade zu zeigen ist */
 export function anmeldeSchritt() {
@@ -124,15 +122,8 @@ function markiere(form, name, text) {
   if (text) zeigeToast(`⚠ ${text}`, 4000);
 }
 
-async function absenden(form, arbeit) {
-  const btn = form.querySelector('[type="submit"]');
-  await mitLadezustand(btn, async () => {
-    try {
-      await arbeit();
-    } catch (err) {
-      zeigeToast(`⚠ ${err.message}`, 5000);
-    }
-  });
+function absenden(form, arbeit) {
+  return mitFehlerToast(form.querySelector('[type="submit"]'), arbeit);
 }
 
 function angemeldet(benutzer) {
@@ -203,15 +194,11 @@ registriereAktionen({
     });
   },
 
-  'anmeldung-passkey': (btn) => mitLadezustand(btn, async () => {
-    try {
-      const { optionen } = await apiPost('anmeldung/passkey-optionen', undefined, { still401: true });
-      const antwort = await passkeyAssertion(optionen);
-      const r = await apiPost('anmeldung/passkey', antwort, { still401: true });
-      angemeldet(r.benutzer);
-    } catch (err) {
-      zeigeToast(`⚠ ${err.message}`, 5000);
-    }
+  'anmeldung-passkey': (btn) => mitFehlerToast(btn, async () => {
+    const { optionen } = await apiPost('anmeldung/passkey-optionen', undefined, { still401: true });
+    const antwort = await passkeyAssertion(optionen);
+    const r = await apiPost('anmeldung/passkey', antwort, { still401: true });
+    angemeldet(r.benutzer);
   }),
 
   'anmeldung-zurueck': async () => {

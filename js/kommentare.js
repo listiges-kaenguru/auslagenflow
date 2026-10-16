@@ -9,7 +9,7 @@
 //   (Punkte an der Navigation)
 // =============================================
 import {
-  escapeHtml, formatiereZeitpunkt, formatiereBetrag, zeigeToast, mitLadezustand, registriereAktionen
+  escapeHtml, formatiereZeitpunkt, formatiereBetrag, plural, zeigeToast, mitLadezustand, registriereAktionen
 } from './hilfen.js';
 import { apiGet, apiPost, apiDelete, mitId } from './api.js';
 import { offenAttr, beimKlappen } from './klappen.js';
@@ -90,7 +90,7 @@ export function verlaufHtml(e, auslagen = []) {
   // Gezählt werden nur echte Kommentare, nicht die protokollierten Statusänderungen
   const anzahl = v?.kommentare ? v.kommentare.filter((k) => k.art === 'kommentar').length : (e.kommentare || 0);
   const ungelesen = e.ungelesen || 0;
-  const titel = `💬 Verlauf${anzahl ? ` · ${anzahl} ${anzahl === 1 ? 'Kommentar' : 'Kommentare'}` : ''}`;
+  const titel = `💬 Verlauf${anzahl ? ` · ${plural(anzahl, 'Kommentar', 'Kommentare')}` : ''}`;
 
   let inhalt;
   if (v?.fehler) inhalt = `<p class="klein-hinweis klein-hinweis--links">⚠ ${escapeHtml(v.fehler)}</p>`;
@@ -187,7 +187,7 @@ export function abgebrochenHtml(liste, { pdfAktion, mitMitglied = false }) {
               <span class="einreichung-karte__titel">${mitMitglied ? `${escapeHtml(e.mitglied.name)} · ` : ''}${was}
                 am ${formatiereZeitpunkt(e.beendetAm)}</span>
               <span class="einreichung-karte__unter">Eingereicht am ${formatiereZeitpunkt(e.erstelltAm)}
-                · ${e.anzahl} ${e.anzahl === 1 ? 'Auslage' : 'Auslagen'} · ${betragText(e.summe)}</span>
+                · ${plural(e.anzahl, 'Auslage', 'Auslagen')} · ${formatiereBetrag(e.summe)}</span>
             </span>
             ${kommentarMarkeHtml(e)}
           </summary>
@@ -216,9 +216,6 @@ export function kommentarMarkeHtml(e) {
   if (e?.kommentare) return `<span class="kommentar-anzahl" title="Kommentare">💬 ${e.kommentare}</span>`;
   return '';
 }
-
-const betragFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
-const betragText = (b) => betragFormat.format(Number(b) || 0);
 
 /** Kommentare zu einer einzelnen Auslage (Detail-Fenster), nur lesend */
 export function kommentareZurAuslageHtml(einreichungId, auslageId) {

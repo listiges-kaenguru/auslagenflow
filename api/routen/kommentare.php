@@ -151,6 +151,5 @@ route('GET', 'kommentare/ungelesen', function (): void {
         WHERE (k.benutzer_id IS NULL OR k.benutzer_id <> ?) AND k.id > COALESCE(g.bis_id, 0)"
         . ($besitzer === null ? '' : ' AND e.benutzer_id = ?'),
         $besitzer === null ? [$b['id'], $b['id']] : [$b['id'], $b['id'], $besitzer])->fetchColumn();
-    $kasse = in_array($b['kassenrolle'], ['kassenwart', 'vorstand'], true);
-    antworte(['eigene' => $zaehle((int)$b['id']), 'kasse' => $kasse ? $zaehle(null) : 0]);
+    antworte(['eigene' => $zaehle((int)$b['id']), 'kasse' => hatKassenrolle($b) ? $zaehle(null) : 0]);
 });

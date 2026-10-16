@@ -15,6 +15,7 @@ const BACKUP_FORMAT = 'vereinsauslagen-backup';
 const BACKUP_JSON   = 'vereinsauslagen-backup.json';
 
 const ladeJSZip = () => ladeSkript('vendor/jszip.min.js', 'JSZip');
+const ZIP_OPTIONEN = { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } };
 
 // ---------------------------------------------
 // Auswahl & Belege
@@ -66,6 +67,9 @@ async function sammleBelege(auslagen) {
   return ergebnis;
 }
 
+/** Auslage-ID → Dateiname des Belegs (für die CSV-Spalte „Beleg“) */
+const belegNamenAus = (belege) => new Map(belege.map((b) => [b.auslage.id, b.name]));
+
 // ---------------------------------------------
 // CSV
 // ---------------------------------------------
@@ -107,15 +111,14 @@ export async function exportierePaket(auswahl) {
   const auslagen = auslagenOderFehler(auswahl);
 
   const [JSZip, belege] = await Promise.all([ladeJSZip(), sammleBelege(auslagen)]);
-  const belegNamen = new Map(belege.map((b) => [b.auslage.id, b.name]));
 
   const zip = new JSZip();
-  zip.file(dateiname('', auswahl, 'csv'), erstelleCSV(auslagen, belegNamen));
+  zip.file(dateiname('', auswahl, 'csv'), erstelleCSV(auslagen, belegNamenAus(belege)));
   const ordner = zip.folder('Belege');
   // Fotos/PDFs sind bereits komprimiert → nur speichern (schneller)
   for (const b of belege) ordner.file(b.name, b.blob, { compression: 'STORE' });
 
-  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  const blob = await zip.generateAsync(ZIP_OPTIONEN);
   ladeDateiHerunter(blob, dateiname('Export', auswahl, 'zip'));
   return belege.length;
 }
@@ -163,9 +166,8 @@ export async function teileExport(auswahl) {
   const auslagen = auslagenOderFehler(auswahl);
 
   const belege = await sammleBelege(auslagen);
-  const belegNamen = new Map(belege.map((b) => [b.auslage.id, b.name]));
   const dateien = [
-    new File([erstelleCSV(auslagen, belegNamen)], dateiname('', auswahl, 'csv'), { type: 'text/csv' }),
+    new File([erstelleCSV(auslagen, belegNamenAus(belege))], dateiname('', auswahl, 'csv'), { type: 'text/csv' }),
     ...belege.map((b) => new File([b.blob], b.name, { type: b.blob.type }))
   ];
 
@@ -220,7 +222,7 @@ export async function erstelleBackup() {
     ...(hatStammdaten() ? { stammdaten: ladeStammdaten() } : {})
   }, null, 2));
 
-  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  const blob = await zip.generateAsync(ZIP_OPTIONEN);
   if (await ladeDateiHerunter(blob, `AuslagenFlow_Backup_${heuteISO()}.zip`)) merkeBackup();
   return daten.length;
 }

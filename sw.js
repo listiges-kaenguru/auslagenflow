@@ -4,8 +4,9 @@
 // Daten kommen immer live vom Server: Anfragen an api/ werden nie gecacht.
 // Ein Update entsteht durch Erhöhen von VERSION; die App zeigt dann einen „Aktualisieren“-Hinweis.
 // =============================================
-const VERSION = '3.3.0';
-const CACHE   = `vereinsauslagen-mu-${VERSION}`; // Präfix mit altem App-Namen bewusst beibehalten
+const VERSION = '3.3.1';
+const CACHE_PRAEFIX = 'vereinsauslagen-mu-'; // alter App-Name bewusst beibehalten (wie in js/pwa.js)
+const CACHE   = `${CACHE_PRAEFIX}${VERSION}`;
 
 const APP_SHELL = [
   './',
@@ -66,7 +67,7 @@ self.addEventListener('activate', (event) => {
     caches.keys()
       .then((schluessel) => Promise.all(
         schluessel
-          .filter((k) => k.startsWith('vereinsauslagen-mu-') && k !== CACHE)
+          .filter((k) => k.startsWith(CACHE_PRAEFIX) && k !== CACHE)
           .map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())

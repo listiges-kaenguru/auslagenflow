@@ -18,7 +18,7 @@ export const STATUS_LISTE = Object.keys(STATUS);
  * Quelltext der laufenden Version (AGPL-3.0, § 13: Nutzern übers Netz anbieten).
  * Wer die App verändert betreibt, muss hier auf den eigenen geänderten Quelltext verweisen.
  */
-export const QUELLTEXT_URL = 'https://github.com/listiges-kaenguru/auslagenflow';
+const QUELLTEXT_URL ='https://github.com/listiges-kaenguru/auslagenflow';
 
 /** Kurzer Lizenzhinweis mit Link zum Quelltext (Anmeldeseite und Profil) */
 export function lizenzHinweisHtml(zusatzKlasse = '') {
@@ -146,12 +146,6 @@ export function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-/** Eindeutige ID (UUID, falls verfügbar) */
-export function neueId() {
-  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /** Dateinamen bereinigen (Umlaute bleiben erhalten) */
@@ -319,6 +313,17 @@ export async function mitLadezustand(btn, aktion) {
       btn.innerHTML = vorher;
     }
   }
+}
+
+/** Wie mitLadezustand; ein Fehler erscheint als Toast „⚠ …“ */
+export function mitFehlerToast(btn, aktion, dauer = 5000) {
+  return mitLadezustand(btn, async () => {
+    try {
+      await aktion();
+    } catch (err) {
+      zeigeToast(`⚠ ${err.message}`, dauer);
+    }
+  });
 }
 
 // ---------------------------------------------
