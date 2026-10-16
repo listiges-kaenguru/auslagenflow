@@ -177,7 +177,6 @@ function frageGithubRelease(): ?string
         ]);
         $roh = curl_exec($ch);
         $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
     } elseif (ini_get('allow_url_fopen')) {
         $kontext = stream_context_create(['http' => ['header' => $kopf, 'timeout' => 5, 'ignore_errors' => true]]);
         $roh = @file_get_contents(RELEASE_API, false, $kontext);
