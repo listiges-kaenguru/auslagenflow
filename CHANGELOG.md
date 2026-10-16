@@ -9,6 +9,9 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+### Geändert
+- README verlinkt die Projektseite <https://auslagenflow.schmaralde.de/> (Anleitung, Demo).
+
 ### Intern
 - Metadaten aufgeräumt: Offene Punkte stehen jetzt in `IDEEN.md`, die technische Referenz (Funktionen,
   API-Routen, Datenbank) in `docs/ENTWICKLUNG.md`; dieses Changelog enthält nur noch die Versionen.

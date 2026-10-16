@@ -2,6 +2,8 @@
 
 **Von der Auslage bis zur Erstattung.**
 
+Projektseite mit Anleitung und Demo: <https://auslagenflow.schmaralde.de/>
+
 Web-App (PWA) für kleine Vereine: Mitglieder erfassen ihre Auslagen mit Belegfoto oder PDF,
 reichen sie gesammelt als PDF bei der Kasse ein und sehen jederzeit, was offen, eingereicht oder
 erstattet ist. Die Daten liegen zentral in einer MySQL-Datenbank, jede Person hat ein eigenes Konto.
