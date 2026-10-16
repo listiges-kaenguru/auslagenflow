@@ -331,10 +331,15 @@ Oben im Profil auf **↩ Abmelden** tippen. Tu das vor allem an Computern, die a
 
 ### App-Version
 
-Ganz unten im Profil steht unter **App-Version**, welche Version der App gerade läuft. Gibt es
-eine neuere Version, erscheint dort der Hinweis **Aktualisierung verfügbar** mit der neuen
-Versionsnummer. Tippe auf **🔄 Jetzt aktualisieren**, die App lädt dann neu. Deine Daten bleiben
-dabei erhalten.
+Ganz unten im Profil steht unter **App-Version**, welche Version der App gerade läuft. Wurde auf dem
+Server bereits eine neuere Version eingespielt, erscheint dort der Hinweis **Aktualisierung verfügbar**
+mit der neuen Versionsnummer. Tippe auf **🔄 Jetzt aktualisieren**, die App lädt dann neu. Deine Daten
+bleiben dabei erhalten.
+
+Außerdem prüft die App, ob auf GitHub eine neuere Version von AuslagenFlow erschienen ist. Ist das
+der Fall, steht dort **Neue Version auf GitHub**. Einspielen kann sie nur dein Administrator; als
+Admin findest du im Hinweis den Link **Zum Release auf GitHub**. Sonst steht dort „Die App ist auf dem
+neuesten Stand“.
 
 Darunter (und auf der Anmeldeseite) steht, dass AuslagenFlow freie Software unter der GNU AGPL v3
 ist. Über **Quelltext** kommst du zum Programmcode der App.

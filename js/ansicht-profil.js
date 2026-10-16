@@ -1,6 +1,6 @@
 // =============================================
 // ANSICHT 4: PROFIL
-// Stammdaten · Passwort · Zwei-Faktor (TOTP) · Passkeys · Abmelden · App-Version (mit Lizenz/Quelltext)
+// Stammdaten · Passwort · Zwei-Faktor (TOTP) · Passkeys · Abmelden · App-Version (Abgleich mit dem GitHub-Release, Lizenz/Quelltext)
 // Für Admins zusätzlich „Administration“: Benutzerverwaltung (inkl. Kassenrolle) und Datenbank-Verbindung
 // =============================================
 import {
@@ -30,6 +30,10 @@ let adminBenutzer = null;       // Liste oder null (noch nicht geladen)
 let adminDb = null;             // { db, uebersicht, php }
 let dbTest = null;              // { eingabe, uebersicht, gleicheDb }
 let adminLaedt = false;
+let release = null;             // { installiert, neueste, geprueftAm } – Server + neuestes GitHub-Release
+let releaseLaedt = false;
+
+const RELEASES_URL = 'https://github.com/listiges-kaenguru/auslagenflow/releases/latest';
 
 const neuRendern = () => document.dispatchEvent(new CustomEvent('ansicht-rendern'));
 
@@ -87,6 +91,7 @@ export function rendereProfil(container) {
     </div>`;
 
   if (istAdmin() && adminBenutzer === null && !adminLaedt) ladeAdminDaten();
+  if (release === null && !releaseLaedt) ladeRelease();
 }
 
 // ---------------------------------------------
@@ -223,9 +228,55 @@ function versionHtml() {
         <p class="codes-kasten__titel">Aktualisierung verfügbar</p>
         <p class="abschnitt__text">Neue Version: <strong>${escapeHtml(neu ? `v${neu}` : 'wird ermittelt …')}</strong> – deine Daten bleiben erhalten.</p>
         <button type="button" class="btn btn-primaer btn-klein" data-aktion="update-installieren">🔄 Jetzt aktualisieren</button>
-      </div>`
-      : ermittelt ? '<p class="klein-hinweis klein-hinweis--links">Die App ist auf dem neuesten Stand.</p>' : ''}
+      </div>` : ''}
+    ${releaseHtml(laufend)}
     ${lizenzHinweisHtml('klein-hinweis--links')}`;
+}
+
+/** Vergleich mit dem neuesten GitHub-Release (der Server fragt GitHub und merkt sich das Ergebnis) */
+function releaseHtml(laufend) {
+  if (!release) return '<p class="klein-hinweis klein-hinweis--links">Neueste Version auf GitHub wird geprüft …</p>';
+  const { neueste } = release;
+  const installiert = release.installiert || laufend;
+  if (!neueste) {
+    return '<p class="klein-hinweis klein-hinweis--links">Die neueste Version auf GitHub konnte nicht abgerufen werden.</p>';
+  }
+  if (!installiert || vergleicheVersion(neueste, installiert) <= 0) {
+    return `<p class="klein-hinweis klein-hinweis--links">Die App ist auf dem neuesten Stand
+      (neueste Version auf GitHub: v${escapeHtml(neueste)}).</p>`;
+  }
+  return `
+    <div class="codes-kasten" role="status">
+      <p class="codes-kasten__titel">Neue Version auf GitHub</p>
+      <p class="abschnitt__text"><strong>v${escapeHtml(neueste)}</strong> ist erschienen, installiert ist
+        v${escapeHtml(installiert)}. ${istAdmin()
+          ? 'Lade das Release herunter und spiele es auf den Webspace ein – Daten und Einstellungen bleiben erhalten.'
+          : 'Dein Administrator kann sie auf dem Server einspielen.'}</p>
+      ${istAdmin() ? `<p class="abschnitt__text"><a href="${RELEASES_URL}" target="_blank" rel="noopener">Zum Release auf GitHub</a></p>` : ''}
+    </div>`;
+}
+
+/** SemVer-Vergleich ohne Vorabversionen: < 0, 0 oder > 0 */
+function vergleicheVersion(a, b) {
+  const teileA = a.split('.').map(Number);
+  const teileB = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    const unterschied = (teileA[i] || 0) - (teileB[i] || 0);
+    if (unterschied) return unterschied;
+  }
+  return 0;
+}
+
+async function ladeRelease() {
+  releaseLaedt = true;
+  try {
+    release = await apiGet('profil/version');
+  } catch {
+    release = { installiert: null, neueste: null };
+  } finally {
+    releaseLaedt = false;
+  }
+  document.dispatchEvent(new CustomEvent('version-geaendert'));
 }
 
 // Nur den Versionsbereich auffrischen – ein komplettes Neu-Rendern würde Formulareingaben verwerfen

@@ -9,6 +9,14 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+### Hinzugefügt
+- **Versionsprüfung gegen GitHub:** Das Profil vergleicht unter „App-Version“ die installierte Version mit dem
+  neuesten Release auf GitHub. Ist dort eine neuere erschienen, erscheint der Hinweis „Neue Version auf GitHub“
+  (für Admins mit Link zum Release). Bisher meldete „Die App ist auf dem neuesten Stand“ nur, dass der Browser
+  die auf dem Server installierte Version nutzt. Die Abfrage stellt der Server (neue Route `GET profil/version`,
+  über cURL oder `allow_url_fopen`), nicht der Browser; das Ergebnis merkt er sich 12 Stunden in `va_meta`,
+  nach einem Fehlschlag fragt er frühestens nach einer Stunde erneut.
+
 ### Geändert
 - README verlinkt die Projektseite <https://auslagenflow.schmaralde.de/> (Anleitung, Demo).
 

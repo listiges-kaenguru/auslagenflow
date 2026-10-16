@@ -172,6 +172,17 @@ api/routen/               Einrichtung, Anmeldung, Profil, Auslagen/Einreichungen
 api/config/config.php     wird bei der Einrichtung erzeugt (DB-Zugang + Schlüssel)
 ```
 
+## Aktualisieren
+
+Ob eine neue Version erschienen ist, zeigt das Profil unter „App-Version“. Dazu fragt der Server höchstens
+alle 12 Stunden das neueste Release bei der GitHub-API (`api.github.com`) ab – über cURL oder
+`allow_url_fopen`; ist beides gesperrt, steht dort nur, dass die Prüfung nicht möglich war. Dabei werden
+keine Daten des Vereins oder der Mitglieder übertragen.
+
+Zum Aktualisieren das Release-ZIP herunterladen und die Dateien auf dem Webspace überschreiben;
+`api/config/config.php` dabei nicht löschen. Neue Tabellen und Spalten legt die App bei der nächsten
+Anfrage selbst an. Die Browser der Mitglieder zeigen danach „Aktualisierung verfügbar“.
+
 ## Neue Version ausliefern
 
 Nach Änderungen an Frontend-Dateien **`VERSION` in `sw.js` erhöhen**, neue Dateien in `APP_SHELL`
