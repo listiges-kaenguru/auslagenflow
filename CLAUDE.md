@@ -119,7 +119,9 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
 ## Testen / Ausführen
 
 - Lokal nichts installieren, alles läuft in der gemeinsamen Testumgebung: `~/projects/testumgebung/pt test` prüft die Syntax
-  (PHP, JS), lokale Links und richtet die App gegen eine Wegwerf-MariaDB ein (Einrichtung, Anmeldung).
+  (PHP, JS), lokale Links und führt `tests/run.sh` aus (Bash ohne Framework, Kopie der App gegen eine
+  Wegwerf-MariaDB: Einrichtung, Anmeldung). Neue Tests in `tests/` ergänzen; `~/projects/testumgebung/pt offen` lässt die
+  Testinstanz danach unter http://localhost:8002 offen.
 - Ausprobieren im Browser: `~/projects/testumgebung/pt -p 8000 php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen;
   MariaDB dazu im selben Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen
   HTTPS oder `localhost`.

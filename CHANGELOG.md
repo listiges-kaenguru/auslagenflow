@@ -12,6 +12,7 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 ### Intern
 
 - Tests laufen in der gemeinsamen Testumgebung (`~/projects/testumgebung/pt test`): Syntax, Einrichtung und Anmeldung gegen eine Wegwerf-MariaDB.
+- API-Tests liegen jetzt im Projekt (`tests/run.sh`, Bash ohne Framework) statt zentral in der Testumgebung; `tests/` ist nicht im Release-ZIP.
 
 ## [3.4.0] – 2026-10-17 – Versionsprüfung gegen GitHub
 
