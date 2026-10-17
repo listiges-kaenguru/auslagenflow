@@ -170,6 +170,7 @@ api/index.php             einziger öffentlicher PHP-Einstieg (Router: api/?r=�
 api/lib/                  HTTP, Konfiguration, DB/Schema, Sitzung, TOTP, WebAuthn
 api/routen/               Einrichtung, Anmeldung, Profil, Auslagen/Einreichungen/Belege, Kasse, Admin
 api/config/config.php     wird bei der Einrichtung erzeugt (DB-Zugang + Schlüssel)
+tests/                    automatische Tests (tests/run.sh), nicht im Release-ZIP
 ```
 
 ## Aktualisieren
@@ -202,8 +203,9 @@ Weitergeben an die Vereinsmitglieder.
 - **[`docs/ENTWICKLUNG.md`](docs/ENTWICKLUNG.md)** – technischer Stand, API-Routen, Datenbank
 - **[`CONTRIBUTING.md`](CONTRIBUTING.md)** – wie du Fehler meldest und Änderungen beiträgst
 - **[`CLAUDE.md`](CLAUDE.md)** – Konventionen und Checkliste für Änderungen (auch für Claude Code)
-- Es gibt keine automatisierten Tests. Zum Ausprobieren genügt ein lokaler Webserver mit PHP und
-  MySQL/MariaDB (Passkeys funktionieren nur über HTTPS oder `localhost`).
+- Automatische Tests: `tests/run.sh` (Bash, braucht PHP, MariaDB, curl und jq; richtet eine Kopie der App gegen
+  eine Wegwerf-Datenbank ein). Zum Ausprobieren genügt ein lokaler Webserver mit PHP und MySQL/MariaDB
+  (Passkeys funktionieren nur über HTTPS oder `localhost`).
 
 ## Downloads
 
