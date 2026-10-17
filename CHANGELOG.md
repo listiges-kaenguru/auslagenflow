@@ -9,6 +9,10 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+### Intern
+
+- Tests laufen in der gemeinsamen Testumgebung (`~/projects/testumgebung/pt test`): Syntax, Einrichtung und Anmeldung gegen eine Wegwerf-MariaDB.
+
 ## [3.4.0] – 2026-10-17 – Versionsprüfung gegen GitHub
 
 ### Hinzugefügt

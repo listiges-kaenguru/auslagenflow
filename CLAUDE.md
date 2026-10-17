@@ -118,10 +118,11 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
 
 ## Testen / Ausführen
 
-- Keine automatisierten Tests, keine Linter-Konfiguration.
-- Zum Testen: lokaler Webserver mit PHP 8.1+ und MySQL/MariaDB oder Upload auf einen Webspace mit
-  HTTPS (Passkeys brauchen HTTPS oder `localhost`).
-- `php -l` auf geänderte PHP-Dateien, `node --check` für JS.
+- Lokal nichts installieren, alles läuft in der gemeinsamen Testumgebung: `~/projects/testumgebung/pt test` prüft die Syntax
+  (PHP, JS), lokale Links und richtet die App gegen eine Wegwerf-MariaDB ein (Einrichtung, Anmeldung).
+- Ausprobieren im Browser: `~/projects/testumgebung/pt -p 8000 php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen;
+  MariaDB dazu im selben Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen
+  HTTPS oder `localhost`.
 
 ## Sprache
 
