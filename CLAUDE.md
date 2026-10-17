@@ -120,7 +120,10 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
 
 - Lokal nichts installieren, alles läuft in der gemeinsamen Testumgebung: `~/projects/testumgebung/pt test` prüft die Syntax
   (PHP, JS), lokale Links und führt `tests/run.sh` aus (Bash ohne Framework, Kopie der App gegen eine
-  Wegwerf-MariaDB: Einrichtung, Anmeldung). Neue Tests in `tests/` ergänzen; `~/projects/testumgebung/pt offen` lässt die
+  Wegwerf-MariaDB). `tests/sicherheit.sh` enthält die Negativtests (Rechte, Kasse, Statuswechsel, Kommentare,
+  Sitzungen, CSRF, Login-Sperre, Zwei-Faktor, Passkeys, Injection, Eingabevalidierung, Fehlermeldungen);
+  `tests/totp-code.php` und `tests/passkey-client.php` sind bewusst unabhängig vom App-Code. Jede neue
+  Sicherheitsprüfung muss bei einer passenden Sabotage der App nachweislich fehlschlagen. Neue Tests in `tests/` ergänzen; `~/projects/testumgebung/pt offen` lässt die
   Testinstanz danach unter http://localhost:8002 offen.
 - Ausprobieren im Browser: `~/projects/testumgebung/pt -p 8000 php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen;
   MariaDB dazu im selben Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen
