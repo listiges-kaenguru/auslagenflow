@@ -248,6 +248,8 @@ CD="$(json --arg c "$CH" --arg o "$U" '{type: "webauthn.create", challenge: $c, 
   { head -c 1000000 /dev/zero | tr '\0' '\201'; printf '\x00'; } | base64 -w0 | tr '+/' '-_' | tr -d '='; printf '"}}}'; } > "$TMP/tief.json"
 TIEF="$(als pia -X POST "${A}profil/passkey" -d @"$TMP/tief.json")"
 pruefe "1 000 000 Ebenen CBOR: sauber abgewiesen (JSON-Fehler, kein Absturz)" "$TIEF" '.ok == false'
+CH="$(reg_challenge pia)"
+pruefe "sonst gültiger Passkey mit 20 Ebenen CBOR → 400" "$(status pia -X POST "${A}profil/passkey" -d "$(pk registrieren "$TMP/fremd.key" "$CH" "$U" "$RP" tief)")" '. == 400'
 pruefe "kein Base64url → 400" "$(status pia -X POST "${A}profil/passkey" -d '{"credential":{"response":{"clientDataJSON":"!!!","attestationObject":"!!!"}}}')" '. == 400'
 
 CH="$(login_challenge pk)"

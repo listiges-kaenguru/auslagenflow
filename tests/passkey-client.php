@@ -5,7 +5,8 @@
 //   php tests/passkey-client.php registrieren <schluesseldatei> <challenge> <origin> <rp-id> [manipulation]
 //   php tests/passkey-client.php anmelden <schluesseldatei> <challenge> <origin> <rp-id> <zaehler> [manipulation] [user-handle]
 // Manipulationen: ohne-uv (Benutzer nicht verifiziert), fremde-rp (RP-ID-Hash einer anderen Adresse),
-// falscher-typ (webauthn.create statt .get bzw. umgekehrt), falsche-signatur (mit anderem Schlüssel signiert).
+// falscher-typ (webauthn.create statt .get bzw. umgekehrt), falsche-signatur (mit anderem Schlüssel signiert),
+// tief (nur Registrierung: sonst gültig, aber attStmt 20 Ebenen tief verschachtelt).
 // Ausgabe: JSON-Body für die API (Registrierung: {credential, name}, Anmeldung: {id, response}).
 // Der user-handle wird unverändert übernommen (bei AuslagenFlow schon Base64url, wie im Browser-Frontend).
 declare(strict_types=1);
@@ -55,13 +56,15 @@ if ($befehl === 'registrieren') {
     $flags = $manipulation === 'ohne-uv' ? 0x41 : 0x45;   // UP | (UV) | AT
     if ($manipulation === 'fremde-rp') $rpHash = hash('sha256', 'boese.example', true);
     $authData = $rpHash . chr($flags) . pack('N', 0) . str_repeat("\0", 16) . pack('n', strlen($credentialId)) . $credentialId . $cose;
+    $attStmt = [];
+    if ($manipulation === 'tief') for ($i = 0; $i < 20; $i++) $attStmt = [0 => $attStmt ?: 0];
     $clientData = json_encode(['type' => $manipulation === 'falscher-typ' ? 'webauthn.get' : 'webauthn.create',
         'challenge' => $challenge, 'origin' => $origin, 'crossOrigin' => false], JSON_UNESCAPED_SLASHES);
     echo json_encode(['credential' => [
         'id' => b64u($credentialId),
         'response' => [
             'clientDataJSON' => b64u($clientData),
-            'attestationObject' => b64u(cbor(['fmt' => 'none', 'attStmt' => [], 'authData' => ['b' => $authData]])),
+            'attestationObject' => b64u(cbor(['fmt' => 'none', 'attStmt' => $attStmt, 'authData' => ['b' => $authData]])),
         ],
     ], 'name' => 'Testschlüssel']);
     exit(0);

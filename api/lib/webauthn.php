@@ -12,6 +12,9 @@ declare(strict_types=1);
 // ---------------------------------------------
 final class Cbor
 {
+    /** Passkey-Daten sind flach (höchstens 3–4 Ebenen); tiefer verschachtelte Daten würden nur Speicher kosten */
+    private const MAX_TIEFE = 16;
+
     private int $pos = 0;
 
     private function __construct(private readonly string $daten) {}
@@ -45,8 +48,9 @@ final class Cbor
         };
     }
 
-    private function element(): mixed
+    private function element(int $tiefe = 0): mixed
     {
+        if ($tiefe > self::MAX_TIEFE) throw new ApiFehler('Passkey-Daten sind zu tief verschachtelt.');
         $kopf = ord($this->bytes(1));
         $typ = $kopf >> 5;
         $info = $kopf & 0x1f;
@@ -57,13 +61,13 @@ final class Cbor
             case 3: return $this->bytes($this->laenge($info));
             case 4:
                 $liste = [];
-                for ($i = $this->laenge($info); $i > 0; $i--) $liste[] = $this->element();
+                for ($i = $this->laenge($info); $i > 0; $i--) $liste[] = $this->element($tiefe + 1);
                 return $liste;
             case 5:
                 $map = [];
                 for ($i = $this->laenge($info); $i > 0; $i--) {
-                    $schluessel = $this->element();
-                    $map[is_int($schluessel) ? $schluessel : (string)$schluessel] = $this->element();
+                    $schluessel = $this->element($tiefe + 1);
+                    $map[is_int($schluessel) ? $schluessel : (string)$schluessel] = $this->element($tiefe + 1);
                 }
                 return $map;
             case 7:
