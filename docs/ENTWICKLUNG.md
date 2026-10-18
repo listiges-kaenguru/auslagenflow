@@ -7,7 +7,7 @@ Checkliste für Änderungen stehen in [`CLAUDE.md`](../CLAUDE.md) und [`CONTRIBU
 
 | | |
 |---|---|
-| App-Version (`sw.js` → `VERSION`) | **v3.4.0** |
+| App-Version (`sw.js` → `VERSION`) | **v3.4.1** |
 | Schema-Version (`api/lib/db.php` → `SCHEMA_VERSION`) | **6** |
 | Tests | keine automatisierten Tests |
 

@@ -9,6 +9,10 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+## [3.4.1] – 2026-10-18
+
+Sicherheitskorrektur: Der CBOR-Decoder der Passkey-Registrierung begrenzt die Verschachtelungstiefe.
+
 ### Sicherheit
 
 - Passkey-Registrierung: Der CBOR-Decoder begrenzt die Verschachtelung auf 16 Ebenen. Bisher konnte eine angemeldete Person mit extrem tief verschachtelten Daten den PHP-Speicher erschöpfen (Serverfehler ohne Antwort). Normale Passkeys sind nicht betroffen.
