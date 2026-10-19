@@ -9,6 +9,10 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 
 ## [Unveröffentlicht]
 
+### Intern
+
+- Tests: Alle API-Routen sind jetzt automatisch getestet. Neu ist `tests/routen.sh` für die drei bisher ungetesteten Routen: Übernahme importierter Auslagen (`einreichungen/uebernahme`), „gelesen“-Stand der Kommentare (`kommentare/gelesen` mit `kommentare/ungelesen`) und das Einreichungs-PDF über die Kasse (`kasse/einreichung/pdf`). Dazu gehören Normalfall, Rechte, ungültige Eingaben, Injection und Grenzwerte. Sabotage-Proben bestätigen, dass die Prüfungen anschlagen. Coverage von `einreichungen.php` 69 → 90 %, `kommentare.php` 72 → 85 %.
+
 ## [3.4.1] – 2026-10-18
 
 Sicherheitskorrektur: Der CBOR-Decoder der Passkey-Registrierung begrenzt die Verschachtelungstiefe.

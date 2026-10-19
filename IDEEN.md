@@ -5,7 +5,6 @@ Offene Punkte und Ideen für spätere Versionen. Erledigtes wird hier gestrichen
 
 ## ToDo
 
-- [ ] Automatisierte Tests zumindest für die API-Routen
 - [ ] Ende-zu-Ende-Test auf echtem Webhosting (Apache mit `.htaccess`, nginx-Regeln aus der README)
 
 ## Ideen

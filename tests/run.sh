@@ -44,7 +44,8 @@ sql() { mariadb --socket="$TMP/db/sock" -N af -e "$1"; }
 declare -A IP=([test]=127.0.0.1 [gast]=127.0.0.2 [admin]=127.0.0.3 [anna]=127.0.0.4 [ben]=127.0.0.5
   [kai]=127.0.0.6 [vera]=127.0.0.7 [anna2]=127.0.0.8 [fix]=127.0.0.9 [sperre]=127.0.0.10 [sperre2]=127.0.0.11
   [ipsperre]=127.0.0.12 [tom]=127.0.0.13 [tom2]=127.0.0.14 [tom3]=127.0.0.15 [tom4]=127.0.0.16 [tom5]=127.0.0.17
-  [pia]=127.0.0.18 [pk]=127.0.0.19 [pk2]=127.0.0.20 [pk3]=127.0.0.21 [pk4]=127.0.0.22 [weg]=127.0.0.23 [eva]=127.0.0.24 [uwe]=127.0.0.25 [sigi]=127.0.0.26)
+  [pia]=127.0.0.18 [pk]=127.0.0.19 [pk2]=127.0.0.20 [pk3]=127.0.0.21 [pk4]=127.0.0.22 [weg]=127.0.0.23 [eva]=127.0.0.24 [uwe]=127.0.0.25 [sigi]=127.0.0.26
+  [ida]=127.0.0.27 [jan]=127.0.0.28)
 LOG="$TMP/antworten.log"
 
 # als <akteur> <curl-argumente …>  → Antwort (mit Pflicht-Header und passendem Origin); jede Antwort ins Protokoll
@@ -92,6 +93,8 @@ pruefe "Status angemeldet" "$(api "$U/api/?r=status")" '.ok == true and .eingeri
 
 # shellcheck source=tests/sicherheit.sh
 . "$ROOT/tests/sicherheit.sh"
+# shellcheck source=tests/routen.sh
+. "$ROOT/tests/routen.sh"
 
 echo
 echo "$ANZAHL Prüfungen, $FEHLER fehlgeschlagen"

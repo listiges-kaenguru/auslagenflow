@@ -204,7 +204,7 @@ Weitergeben an die Vereinsmitglieder.
 - **[`CONTRIBUTING.md`](CONTRIBUTING.md)** – wie du Fehler meldest und Änderungen beiträgst
 - **[`CLAUDE.md`](CLAUDE.md)** – Konventionen und Checkliste für Änderungen (auch für Claude Code)
 - Automatische Tests: `tests/run.sh` (Bash, braucht PHP, MariaDB, curl und jq; richtet eine Kopie der App gegen
-  eine Wegwerf-Datenbank ein), Sicherheitstests in `tests/sicherheit.sh`. Zum Ausprobieren genügt ein lokaler Webserver mit PHP und MySQL/MariaDB
+  eine Wegwerf-Datenbank ein), Sicherheitstests in `tests/sicherheit.sh`, weitere Routentests in `tests/routen.sh`. Zum Ausprobieren genügt ein lokaler Webserver mit PHP und MySQL/MariaDB
   (Passkeys funktionieren nur über HTTPS oder `localhost`).
 
 ## Downloads
