@@ -14,6 +14,7 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 - Tests: Alle API-Routen sind jetzt automatisch getestet. Neu ist `tests/routen.sh` für die drei bisher ungetesteten Routen: Übernahme importierter Auslagen (`einreichungen/uebernahme`), „gelesen“-Stand der Kommentare (`kommentare/gelesen` mit `kommentare/ungelesen`) und das Einreichungs-PDF über die Kasse (`kasse/einreichung/pdf`). Dazu gehören Normalfall, Rechte, ungültige Eingaben, Injection und Grenzwerte. Sabotage-Proben bestätigen, dass die Prüfungen anschlagen. Coverage von `einreichungen.php` 69 → 90 %, `kommentare.php` 72 → 85 %.
 - Hinweise für Mitwirkende (`CLAUDE.md`, CHANGELOG) allgemein formuliert, ohne lokale Pfade und eigene Werkzeuge.
 - Testskripte nennen in Meldungen und Kommentaren keinen lokalen Pfad mehr, sondern verweisen auf einen Container mit den Testwerkzeugen und die README.
+- Hinweise für Mitwirkende beziehen sich nicht mehr auf andere Projekte; jedes Projekt ist für sich beschrieben.
 
 ## [3.4.1] – 2026-10-18
 

@@ -1,7 +1,7 @@
 # AuslagenFlow – Hinweise für Claude
 
-Projektseite und Anleitung im Projekt `../auslagenflow-web` (<https://auslagenflow.schmaralde.de/>),
-Demo im Projekt `../auslagenflow-demo`, GitHub-Wiki in `../auslagenflow.wiki`.
+Projektseite mit Anleitung: <https://auslagenflow.schmaralde.de/>, Demo: <https://auslagenflow.schmaralde.de/demo/>,
+dazu das GitHub-Wiki dieses Repos.
 
 ## Orientierung
 
@@ -12,7 +12,7 @@ Demo im Projekt `../auslagenflow-demo`, GitHub-Wiki in `../auslagenflow.wiki`.
 - `BENUTZERHANDBUCH.md` – Bedienung für Vereinsmitglieder und Admins, du-Form, ohne Technikjargon
   (Quelle der Anleitung auf der Projektseite, daher nicht verschieben)
 - `CONTRIBUTING.md` – Mitwirken, Checkliste vor dem Pull Request
-- GitHub-Wiki – lokal in `../auslagenflow.wiki` (Remote `auslagenflow.wiki.git`, Branch `master`);
+- GitHub-Wiki – eigenes Git-Repo `auslagenflow.wiki.git` (Branch `master`);
   Inhalte aus README, Benutzerhandbuch und `docs/ENTWICKLUNG.md`, nach Themen aufgeteilt
 
 ## Worum es geht
@@ -109,10 +109,8 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
 5. **`CHANGELOG.md` und `IDEEN.md` aktualisieren.** Bei nutzersichtbaren
    Änderungen auch **`BENUTZERHANDBUCH.md`** (Bedienung, Knopf-Beschriftungen exakt wie in der UI)
    und bei Betrieb/Installation die README anpassen.
-6. **Projektseite und Demo mitziehen:** neue Funktionen auf `../auslagenflow-web` beschreiben; nach einem
-   Release dort `scripts/build-download.sh`, in `../auslagenflow-demo` `scripts/build.sh` ausführen und beides
-   hochladen. Neue Entwicklungsdateien in `.gitattributes` als `export-ignore` eintragen.
-7. **Wiki nachziehen** (`../auslagenflow.wiki`, eigenes Git-Repo): Die Seiten spiegeln README,
+6. **Neue Entwicklungsdateien** in `.gitattributes` als `export-ignore` eintragen.
+7. **Wiki nachziehen** (eigenes Git-Repo `auslagenflow.wiki.git`): Die Seiten spiegeln README,
    Benutzerhandbuch, `docs/ENTWICKLUNG.md` (API-Routen, Schema) und `IDEEN.md` (Roadmap) – geänderte Abschnitte dort
    ebenfalls anpassen und im Wiki-Repo committen.
 
@@ -127,7 +125,7 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
   Sicherheitsprüfung muss bei einer passenden Sabotage der App nachweislich fehlschlagen. Neue Tests in `tests/`
   ergänzen; `OFFEN=1 tests/run.sh` lässt die Testinstanz danach unter http://localhost:8002 offen.
 - Ausprobieren im Browser: `php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen; MariaDB dazu im selben
-  Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen HTTPS oder `localhost`.
+  Container als Wegwerf-Instanz mit eigenem `--datadir` starten (nie ohne, sonst trifft es die System-Datenbank). Passkeys brauchen HTTPS oder `localhost`.
 - Login: Passkeys und Zwei-Faktor per TOTP gehören dazu; neue Anmeldewege bekommen beides.
 
 ## Sprache
