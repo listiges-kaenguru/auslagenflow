@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # API-Tests von AuslagenFlow (Bash, ohne Framework und ohne Abhängigkeiten).
-# Laufen in der Testumgebung (~/projects/testumgebung):
-#   pt test                 mit Syntax- und Linkprüfung
-#   pt bash tests/run.sh    nur diese Tests
-#   pt offen                danach bleibt der Server unter http://localhost:8002 offen
-#   pt abdeckung            mit Zeilen-Coverage der PHP-Dateien
+# Am besten in einem Container mit den Testwerkzeugen ausführen:
+#   tests/run.sh                         diese Tests
+#   OFFEN=1 tests/run.sh                 danach bleibt der Server unter http://localhost:8002 offen
+#   PHP_SERVER=<PHP mit Xdebug> tests/run.sh   mit Zeilen-Coverage der PHP-Dateien
 # Brauchen php (mit pdo_mysql), MariaDB, curl und jq. Arbeiten auf einer Kopie des Arbeitsstands (ohne ignorierte
 # Dateien wie api/config/config.php) mit einer Wegwerf-MariaDB in einem temporären Ordner; im Repo entsteht nichts.
 # PHP läuft mit eingeschalteter Fehleranzeige (ungünstigster Fall auf Webspaces): Warnungen oder Pfade in
@@ -15,9 +14,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PORT="${TEST_PORT:-8002}"
 DBPORT="${TEST_DB_PORT:-3398}"
 U="http://127.0.0.1:$PORT"
-PHP_SERVER="${PHP_SERVER:-php}"   # pt abdeckung setzt hier PHP mit Xdebug
+PHP_SERVER="${PHP_SERVER:-php}"   # für Coverage: PHP mit Xdebug
 for t in php curl jq git mariadbd mariadb mariadb-install-db; do
-  command -v "$t" >/dev/null || { echo "$t fehlt – in der Testumgebung ausführen: ~/projects/testumgebung/pt test" >&2; exit 2; }
+  command -v "$t" >/dev/null || { echo "$t fehlt – in einem Container mit den Testwerkzeugen ausführen (siehe README)" >&2; exit 2; }
 done
 
 TMP="$(mktemp -d)"
