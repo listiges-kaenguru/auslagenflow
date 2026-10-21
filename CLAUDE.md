@@ -1,7 +1,6 @@
 # AuslagenFlow – Hinweise für Claude
 
-Projektseite mit Anleitung: <https://auslagenflow.schmaralde.de/>, Demo: <https://auslagenflow.schmaralde.de/demo/>,
-dazu das GitHub-Wiki dieses Repos.
+Projektseite mit Anleitung: <https://auslagenflow.schmaralde.de/>, Demo: <https://auslagenflow.schmaralde.de/demo/>.
 
 ## Orientierung
 
@@ -12,8 +11,6 @@ dazu das GitHub-Wiki dieses Repos.
 - `BENUTZERHANDBUCH.md` – Bedienung für Vereinsmitglieder und Admins, du-Form, ohne Technikjargon
   (Quelle der Anleitung auf der Projektseite, daher nicht verschieben)
 - `CONTRIBUTING.md` – Mitwirken, Checkliste vor dem Pull Request
-- GitHub-Wiki – eigenes Git-Repo `auslagenflow.wiki.git` (Branch `master`);
-  Inhalte aus README, Benutzerhandbuch und `docs/ENTWICKLUNG.md`, nach Themen aufgeteilt
 
 ## Worum es geht
 
@@ -110,9 +107,6 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
    Änderungen auch **`BENUTZERHANDBUCH.md`** (Bedienung, Knopf-Beschriftungen exakt wie in der UI)
    und bei Betrieb/Installation die README anpassen.
 6. **Neue Entwicklungsdateien** in `.gitattributes` als `export-ignore` eintragen.
-7. **Wiki nachziehen** (eigenes Git-Repo `auslagenflow.wiki.git`): Die Seiten spiegeln README,
-   Benutzerhandbuch, `docs/ENTWICKLUNG.md` (API-Routen, Schema) und `IDEEN.md` (Roadmap) – geänderte Abschnitte dort
-   ebenfalls anpassen und im Wiki-Repo committen.
 
 ## Testen / Ausführen
 
