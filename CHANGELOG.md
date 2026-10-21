@@ -12,6 +12,7 @@ offene Punkte: [`IDEEN.md`](IDEEN.md).
 ### Intern
 
 - Tests: Alle API-Routen sind jetzt automatisch getestet. Neu ist `tests/routen.sh` für die drei bisher ungetesteten Routen: Übernahme importierter Auslagen (`einreichungen/uebernahme`), „gelesen“-Stand der Kommentare (`kommentare/gelesen` mit `kommentare/ungelesen`) und das Einreichungs-PDF über die Kasse (`kasse/einreichung/pdf`). Dazu gehören Normalfall, Rechte, ungültige Eingaben, Injection und Grenzwerte. Sabotage-Proben bestätigen, dass die Prüfungen anschlagen. Coverage von `einreichungen.php` 69 → 90 %, `kommentare.php` 72 → 85 %.
+- Hinweise für Mitwirkende (`CLAUDE.md`, CHANGELOG) allgemein formuliert, ohne lokale Pfade und eigene Werkzeuge.
 
 ## [3.4.1] – 2026-10-18
 
@@ -23,7 +24,7 @@ Sicherheitskorrektur: Der CBOR-Decoder der Passkey-Registrierung begrenzt die Ve
 
 ### Intern
 
-- Tests laufen in der gemeinsamen Testumgebung (`~/projects/testumgebung/pt test`): Syntax, Einrichtung und Anmeldung gegen eine Wegwerf-MariaDB.
+- Tests laufen in einem Container (`tests/run.sh`): Syntax, Einrichtung und Anmeldung gegen eine Wegwerf-MariaDB.
 - API-Tests liegen jetzt im Projekt (`tests/run.sh`, Bash ohne Framework) statt zentral in der Testumgebung; `tests/` ist nicht im Release-ZIP.
 - Tests schärfer: Die Status-Prüfungen erkennen Fehlerantworten und prüfen den Einrichtungsstand bzw. den angemeldeten Benutzer.
 - Negativtests in `tests/sicherheit.sh` (267 Prüfungen): Rechte, Kasse, Statuswechsel, Kommentare, Sitzungen, CSRF, Login-Sperre, Zwei-Faktor, Passkeys (ES256/RS256), Injection, Eingabevalidierung, Fehlermeldungen; unabhängige TOTP-Berechnung und Passkey-Simulation in `tests/`.

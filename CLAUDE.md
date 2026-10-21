@@ -110,25 +110,25 @@ Admin-Bereich. Zielgruppe: kleine Vereine auf normalem Shared-Webhosting (FTP-Up
    Änderungen auch **`BENUTZERHANDBUCH.md`** (Bedienung, Knopf-Beschriftungen exakt wie in der UI)
    und bei Betrieb/Installation die README anpassen.
 6. **Projektseite und Demo mitziehen:** neue Funktionen auf `../auslagenflow-web` beschreiben; nach einem
-   Release dort `scripts/build-download.sh`, in `../auslagenflow-demo` `scripts/build.sh` ausführen und an den
-   Upload erinnern. Neue Entwicklungsdateien in `.gitattributes` als `export-ignore` eintragen.
+   Release dort `scripts/build-download.sh`, in `../auslagenflow-demo` `scripts/build.sh` ausführen und beides
+   hochladen. Neue Entwicklungsdateien in `.gitattributes` als `export-ignore` eintragen.
 7. **Wiki nachziehen** (`../auslagenflow.wiki`, eigenes Git-Repo): Die Seiten spiegeln README,
    Benutzerhandbuch, `docs/ENTWICKLUNG.md` (API-Routen, Schema) und `IDEEN.md` (Roadmap) – geänderte Abschnitte dort
    ebenfalls anpassen und im Wiki-Repo committen.
 
 ## Testen / Ausführen
 
-- Lokal nichts installieren, alles läuft in der gemeinsamen Testumgebung: `~/projects/testumgebung/pt test` prüft die Syntax
-  (PHP, JS), lokale Links und führt `tests/run.sh` aus (Bash ohne Framework, Kopie der App gegen eine
-  Wegwerf-MariaDB). `tests/sicherheit.sh` enthält die Negativtests (Rechte, Kasse, Statuswechsel, Kommentare,
+- Testen in einem Container, nichts global installieren: `tests/run.sh` (Bash ohne Framework, braucht PHP 8.1+,
+  `curl`, `jq`, `git` und MariaDB; Kopie der App gegen eine Wegwerf-MariaDB), dazu Syntaxprüfung (PHP, JS) und
+  lokale Links. `tests/sicherheit.sh` enthält die Negativtests (Rechte, Kasse, Statuswechsel, Kommentare,
   Sitzungen, CSRF, Login-Sperre, Zwei-Faktor, Passkeys, Injection, Eingabevalidierung, Fehlermeldungen),
   `tests/routen.sh` die übrigen Routen (Übernahme, Kommentare gelesen, Kasse-PDF);
   `tests/totp-code.php` und `tests/passkey-client.php` sind bewusst unabhängig vom App-Code. Jede neue
-  Sicherheitsprüfung muss bei einer passenden Sabotage der App nachweislich fehlschlagen. Neue Tests in `tests/` ergänzen; `~/projects/testumgebung/pt offen` lässt die
-  Testinstanz danach unter http://localhost:8002 offen.
-- Ausprobieren im Browser: `~/projects/testumgebung/pt -p 8000 php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen;
-  MariaDB dazu im selben Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen
-  HTTPS oder `localhost`.
+  Sicherheitsprüfung muss bei einer passenden Sabotage der App nachweislich fehlschlagen. Neue Tests in `tests/`
+  ergänzen; `OFFEN=1 tests/run.sh` lässt die Testinstanz danach unter http://localhost:8002 offen.
+- Ausprobieren im Browser: `php -S 0.0.0.0:8000` und <http://localhost:8000> öffnen; MariaDB dazu im selben
+  Container starten (siehe `../auslagenflow-demo/scripts/lokale-db.sh`). Passkeys brauchen HTTPS oder `localhost`.
+- Login: Passkeys und Zwei-Faktor per TOTP gehören dazu; neue Anmeldewege bekommen beides.
 
 ## Sprache
 
